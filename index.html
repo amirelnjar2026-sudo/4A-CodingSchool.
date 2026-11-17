@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blocks</title>
+    
+    <link rel="icon" type="image/png" href="https://img.icons8.com/color/96/puzzle.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --accent: #f59e0b;
+            --accent-hover: #d97706;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --whatsapp: #25d366;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+        header { background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .header-brand { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+        .support-badge { background-color: rgba(37, 211, 102, 0.15); border: 1px solid var(--whatsapp); color: #4ade80; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; transition: 0.2s; }
+        .support-badge:hover { background-color: var(--whatsapp); color: #fff; }
+
+        .user-info { display: flex; align-items: center; gap: 12px; position: relative; }
+        .inbox-wrapper { position: relative; }
+        .inbox-btn { background: rgba(245, 158, 11, 0.15); border: 1px solid var(--accent); color: var(--accent); padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; position: relative; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .inbox-btn:hover { background: var(--accent); color: #000; }
+        .inbox-badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid var(--card-bg); }
+        .inbox-dropdown { position: absolute; top: 45px; left: 0; width: 320px; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000; max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; }
+        .inbox-header { padding: 12px 15px; background: var(--bg-dark); border-bottom: 1px solid var(--border-color); font-weight: bold; font-size: 0.9rem; color: var(--accent); display: flex; justify-content: space-between; align-items: center; }
+        .inbox-item { padding: 12px 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
+        .inbox-item:hover { background-color: rgba(245, 158, 11, 0.08); }
+        .inbox-item-sender { font-size: 0.85rem; font-weight: bold; color: var(--text-main); display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .inbox-item-text { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .btn-edit-name { background: rgba(245, 158, 11, 0.15); color: var(--accent); border: 1px solid var(--accent); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+        .btn-logout { background-color: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+
+        .auth-container { display: flex; justify-content: center; align-items: center; flex: 1; padding: 20px; }
+        .auth-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .auth-card h2 { text-align: center; margin-bottom: 25px; color: var(--accent); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 6px; color: white; font-size: 1rem; }
+        .btn-primary { width: 100%; background-color: var(--accent); color: #000; border: none; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+        .btn-primary:hover { background-color: var(--accent-hover); color: white; }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .dashboard { display: flex; flex: 1; }
+        .sidebar { width: 260px; background-color: var(--card-bg); border-left: 1px solid var(--border-color); padding: 20px 0; }
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li { padding: 15px 25px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .sidebar-menu li:hover, .sidebar-menu li.active { background-color: rgba(245, 158, 11, 0.1); color: var(--accent); border-right: 4px solid var(--accent); }
+
+        .content { flex: 1; padding: 30px; overflow-y: auto; }
+        .folder-filter-bar { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; align-items: center; }
+        .folder-chip-wrapper { display: inline-flex; align-items: center; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; }
+        .folder-chip { color: var(--text-muted); padding: 8px 16px; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+        .folder-chip.active, .folder-chip:hover { background-color: var(--accent); color: #000; font-weight: bold; }
+        .btn-delete-folder { background: var(--danger); color: white; border: none; padding: 8px 12px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
+        .btn-delete-folder:hover { background: #dc2626; }
+
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .video-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+        .video-player-container { width: 100%; height: 180px; background-color: #000; display: flex; align-items: center; justify-content: center; }
+        .video-player-container video { width: 100%; height: 100%; border: none; }
+        .video-info { padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .video-title { font-size: 1.1rem; margin-bottom: 5px; }
+        .video-folder-tag { font-size: 0.75rem; color: var(--accent); background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
+        .status-watched-badge { display: inline-block; background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; margin-top: 10px; }
+
+        .attached-files-box { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; margin-top: 10px; }
+        .file-link-item { display: inline-flex; align-items: center; gap: 6px; background: rgba(245, 158, 11, 0.1); border: 1px solid var(--accent); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; text-decoration: none; margin: 4px 0; transition: 0.2s; font-weight: 500; }
+        .file-link-item:hover { background: var(--accent); color: #000; }
+        .lesson-img-preview { max-width: 80px; max-height: 60px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border-color); cursor: pointer; }
+
+        .chat-container { display: flex; flex-direction: column; height: 70vh; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .chat-bubble { max-width: 75%; padding: 12px 16px; border-radius: 10px; font-size: 0.95rem; line-height: 1.4; cursor: pointer; }
+        .chat-bubble.my-msg { background-color: var(--accent); color: #000; align-self: flex-end; border-top-left-radius: 0; font-weight: 500; }
+        .chat-bubble.other-msg { background-color: #334155; color: var(--text-main); align-self: flex-start; border-top-right-radius: 0; }
+        .chat-sender { font-size: 0.75rem; margin-bottom: 4px; color: #cbd5e1; display: block; }
+        .chat-input-area { display: flex; padding: 15px; background-color: var(--bg-dark); border-top: 1px solid var(--border-color); gap: 10px; align-items: center; }
+        .chat-input-area input[type="text"] { flex: 1; padding: 10px 15px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; color: white; }
+        .chat-file-btn { background: rgba(245, 158, 11, 0.15); border: 1px solid var(--accent); color: var(--accent); padding: 10px 14px; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+        .chat-input-area button.send-btn { background-color: var(--accent); color: #000; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .chat-media-preview { max-width: 200px; max-height: 150px; border-radius: 6px; margin-top: 5px; display: block; }
+        .chat-file-download-card { display: inline-flex; align-items: center; gap: 8px; background: rgba(245, 158, 11, 0.15); border: 1px solid var(--accent); color: var(--text-main); padding: 8px 14px; border-radius: 6px; text-decoration: none; margin-top: 5px; font-weight: 600; font-size: 0.9rem; }
+
+        .group-card-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .data-table { width: 100%; border-collapse: collapse; background-color: var(--card-bg); border-radius: 8px; overflow: hidden; margin-top: 20px; }
+        .data-table th, .data-table td { padding: 12px 15px; text-align: right; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+        .data-table th { background-color: rgba(255,255,255,0.05); color: var(--accent); }
+        .checkbox-group { display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto; background: var(--bg-dark); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+        .checkbox-item input { width: auto; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-brand">
+            <div class="logo">
+                <i class="fa-solid fa-cubes"></i> Blocks
+            </div>
+            <a href="https://wa.me/201021205814" target="_blank" class="support-badge">
+                <i class="fa-brands fa-whatsapp" style="font-size: 1.1rem;"></i> <span>دعم واتساب: 01021205814</span>
+            </a>
+        </div>
+
+        <div class="user-info hidden" id="headerUserInfo">
+            <div class="inbox-wrapper">
+                <button class="inbox-btn" onclick="toggleInboxDropdown()" title="صندوق الرسائل الواردة والواجبات">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span class="inbox-badge hidden" id="inboxBadgeCount">0</span>
+                </button>
+                <div class="inbox-dropdown hidden" id="inboxDropdownList">
+                    <div class="inbox-header">
+                        <span><i class="fa-solid fa-inbox"></i> صندوق البريد والرسائل</span>
+                        <small id="inboxCountSubtitle" style="color:var(--text-muted); font-size:0.75rem;"></small>
+                    </div>
+                    <div id="inboxMessagesContainer"></div>
+                </div>
+            </div>
+
+            <span id="userNameDisplay"></span>
+            <button class="btn-edit-name" onclick="promptChangeName()"><i class="fa-solid fa-pen"></i> تغيير الاسم</button>
+            <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
+        </div>
+    </header>
+
+    <div class="auth-container" id="authSection">
+        <div class="auth-card">
+            <h2>تسجيل الدخول - Blocks</h2>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="loginEmail" required placeholder="example@student.com">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="loginPassword" required placeholder="******">
+                </div>
+                <button type="submit" class="btn-primary">دخول للمنصة</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="dashboard hidden" id="dashboardSection">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li id="menuVideos" class="active" onclick="switchTab('videos')">
+                    <i class="fa-solid fa-play"></i> <span>الدروس والتطبيقات</span>
+                </li>
+                <li id="menuChat" onclick="switchTab('chat')">
+                    <i class="fa-solid fa-comments"></i> <span>المحادثات والجروبات</span>
+                </li>
+                <li id="menuAddVideo" class="admin-only hidden" onclick="switchTab('addVideo')">
+                    <i class="fa-solid fa-folder-plus"></i> <span>إضافة سيشن جديد</span>
+                </li>
+                <li id="menuAddAttachments" class="admin-only hidden" onclick="switchTab('addAttachments')">
+                    <i class="fa-solid fa-paperclip"></i> <span>إضافة ملحقات للسيشنات</span>
+                </li>
+                <li id="menuCompletions" class="admin-only hidden" onclick="switchTab('completions')">
+                    <i class="fa-solid fa-trophy"></i> <span>إشعارات إنهاء الكورس</span>
+                </li>
+                <li id="menuGroups" class="admin-only hidden" onclick="switchTab('groups')">
+                    <i class="fa-solid fa-layer-group"></i> <span>إدارة الجروبات</span>
+                </li>
+                <li id="menuStudents" class="admin-only hidden" onclick="switchTab('students')">
+                    <i class="fa-solid fa-users"></i> <span>إدارة المستخدمين</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <div id="tabVideos">
+                <h2><i class="fa-solid fa-cubes"></i> مكتبة دروس Blocks</h2>
+                <p id="ownerDeleteHint" class="hidden" style="color: var(--accent); font-size: 0.85rem; margin: 8px 0 15px 0;">
+                    <i class="fa-solid fa-shield-halved"></i> صلاحيات المالك: يمكنك حذف مجلد سيشن كامل بالضغط على علامة السلة بجانب اسم المجلد، أو حذف فيديو واحد من أسفله.
+                </p>
+                <div class="folder-filter-bar" id="folderFilterBar"></div>
+                <div class="video-grid" id="videoList"></div>
+            </div>
+
+            <div id="tabChat" class="hidden">
+                <h2><i class="fa-solid fa-comments"></i> المحادثات والجروبات المشتركة</h2>
+                <div style="margin-bottom: 15px;">
+                    <label style="color:var(--text-muted); font-size:0.9rem; display:block; margin-bottom:5px;">اختر المحادثة أو الجروب:</label>
+                    <select id="chatTargetSelect" onchange="changeActiveChatTarget()" style="min-width: 250px; padding: 10px; background:var(--card-bg); color:white; border:1px solid var(--border-color); border-radius:6px;"></select>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessagesBox"></div>
+                    <div class="chat-input-area">
+                        <input type="file" id="chatFileInput" class="hidden" onchange="sendChatFile(this)">
+                        <button class="chat-file-btn" onclick="document.getElementById('chatFileInput').click()" title="إرفاق ملف أو واجب"><i class="fa-solid fa-paperclip"></i></button>
+                        <input type="text" id="chatInputText" placeholder="اكتب رسالتك أو ارفع واجبك هنا..." onkeypress="handleChatKeyPress(event)">
+                        <button class="send-btn" onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i> إرسال</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabAddVideo" class="hidden">
+                <h2><i class="fa-solid fa-cloud-arrow-up"></i> رفع سيشن جديد من الجهاز</h2>
+                <div style="max-width: 600px; margin-top: 20px; background:var(--card-bg); padding:20px; border-radius:8px; border:1px solid var(--border-color);">
+                    <form onsubmit="handleAddVideoForm(event)">
+                        <div class="form-group">
+                            <label>اسم ملف السيشن / المجلد (مثال: Session 1)</label>
+                            <input type="text" id="videoFolder" required placeholder="مثال: Session 1">
+                        </div>
+                        <div class="form-group">
+                            <label>عنوان الفيديو:</label>
+                            <input type="text" id="videoTitle" required placeholder="مثال: شرح الحركة في البلوكس">
+                        </div>
+                        <div class="form-group">
+                            <label>اختر ملف الفيديو من جهازك مباشرة:</label>
+                            <input type="file" id="videoFileUpload" accept="video/*" required style="background:var(--bg-dark); color:#fff; padding:10px; border-radius:6px; border:1px solid var(--border-color); width:100%;">
+                        </div>
+                        <button type="submit" id="uploadVideoBtn" class="btn-primary">رفع وحفظ الفيديو</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="tabAddAttachments" class="hidden">
+                <h2><i class="fa-solid fa-file-circle-plus"></i> إضافة ملحقات (PowerPoint & صور)</h2>
+                <div style="max-width: 600px; margin-top: 20px; background:var(--card-bg); padding:20px; border-radius:8px; border:1px solid var(--border-color);">
+                    <form onsubmit="handleSaveAttachments(event)">
+                        <div class="form-group">
+                            <label>اختر الفيديو:</label>
+                            <select id="targetVideoSelect" required style="background:var(--bg-dark); color:white; padding:12px; border-radius:6px; border:1px solid var(--border-color); width:100%;"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>ملفات PowerPoint أو PDF:</label>
+                            <input type="file" id="attachPptFiles" accept=".ppt, .pptx, .pdf" multiple style="font-size:0.85rem; color:#fff;">
+                        </div>
+                        <div class="form-group">
+                            <label>صور توضيحية:</label>
+                            <input type="file" id="attachImgFiles" accept="image/*" multiple style="font-size:0.85rem; color:#fff;">
+                        </div>
+                        <button type="submit" class="btn-primary">حفظ الملحقات</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="tabCompletions" class="hidden">
+                <h2><i class="fa-solid fa-trophy"></i> إشعارات إنهاء كورس Blocks</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>اسم الطالب</th><th>البريد الإلكتروني</th><th>الكورس المنتهي</th><th>وقت الاكمال</th></tr>
+                    </thead>
+                    <tbody id="completionsTableBody"></tbody>
+                </table>
+            </div>
+
+            <div id="tabGroups" class="hidden">
+                <h2><i class="fa-solid fa-layer-group"></i> إدارة الجروبات</h2>
+                <div style="max-width: 600px; margin-top: 20px; background:var(--card-bg); padding:20px; border-radius:8px; border:1px solid var(--border-color);">
+                    <form onsubmit="handleCreateGroup(event)">
+                        <div class="form-group">
+                            <label>اسم الجروب</label>
+                            <input type="text" id="groupNameInput" required placeholder="مثال: جروب Blocks الصباحي">
+                        </div>
+                        <div class="form-group">
+                            <label>اختر الطلاب:</label>
+                            <div class="checkbox-group" id="groupStudentsCheckboxes"></div>
+                        </div>
+                        <button type="submit" class="btn-primary">إنشاء الجروب</button>
+                    </form>
+                </div>
+                <div id="groupsListContainer" style="margin-top: 20px;"></div>
+            </div>
+
+            <div id="tabStudents" class="hidden">
+                <h2><i class="fa-solid fa-user-plus"></i> إضافة مستخدم جديد</h2>
+                <div style="max-width: 600px; margin-top: 20px;">
+                    <form onsubmit="handleAddUser(event)">
+                        <div class="form-group"><label>الاسم</label><input type="text" id="userNameInput" required></div>
+                        <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="userEmailInput" required></div>
+                        <div class="form-group"><label>كلمة المرور</label><input type="password" id="userPasswordInput" required></div>
+                        <div class="form-group">
+                            <label>نوع الحساب:</label>
+                            <select id="userRoleSelect" onchange="toggleRoleOptions()">
+                                <option value="student">طالب (Student)</option>
+                                <option value="admin">مشرف مساعد (Sub-Admin)</option>
+                            </select>
+                        </div>
+                        <div class="form-group hidden" id="adminPermissionsGroup">
+                            <label>صلاحيات المشرف:</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item"><input type="checkbox" value="videos" class="admin-perm-box" checked> إضافة فيديوهات</label>
+                                <label class="checkbox-item"><input type="checkbox" value="addAttachments" class="admin-perm-box" checked> إضافة ملحقات</label>
+                                <label class="checkbox-item"><input type="checkbox" value="chat" class="admin-perm-box" checked> المحادثات</label>
+                                <label class="checkbox-item"><input type="checkbox" value="students" class="admin-perm-box"> المستخدمين</label>
+                                <label class="checkbox-item"><input type="checkbox" value="completions" class="admin-perm-box" checked> الإشعارات</label>
+                                <label class="checkbox-item"><input type="checkbox" value="groups" class="admin-perm-box" checked> الجروبات</label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="studentVideosGroup">
+                            <label>الفيديوهات المسموحة للطالب:</label>
+                            <div class="checkbox-group" id="studentVideoPermissions"></div>
+                        </div>
+                        <button type="submit" class="btn-primary">إنشاء الحساب</button>
+                    </form>
+                </div>
+                <table class="data-table">
+                    <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>نوع الحساب</th><th>إجراءات</th></tr></thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="editStudentModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center; z-index:9999;">
+        <div style="background:var(--card-bg); padding:30px; border-radius:12px; border:1px solid var(--border-color); width:90%; max-width:500px;">
+            <h3 id="editModalTitle" style="color:var(--accent); margin-bottom:15px;">تعديل الفيديوهات المسموحة</h3>
+            <input type="hidden" id="editStudentEmail">
+            <div class="checkbox-group" id="editStudentVideosList" style="max-height:250px; margin-bottom:20px;"></div>
+            <div style="display:flex; gap:10px;">
+                <button onclick="saveStudentPermissionsEdit()" class="btn-primary" style="flex:1;">حفظ</button>
+                <button onclick="closeEditModal()" style="background:var(--danger); color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPER_ADMIN_EMAIL = "Amirstudent1@student.com";
+        const SUPER_ADMIN_PASS = "123456";
+        const OWNER_EXACT_NAME = "Amir Mohamed(Onwer)";
+
+        let db;
+        let currentFolderFilter = null;
+        let activeChatTarget = null;
+        let activeObjectURLs = [];
+
+        let state = {
+            currentUser: null,
+            users: JSON.parse(localStorage.getItem('blocks_users')) || [],
+            videos: JSON.parse(localStorage.getItem('blocks_videos')) || [],
+            messages: [],
+            completions: [],
+            groups: JSON.parse(localStorage.getItem('blocks_groups')) || [],
+            watchedVideos: JSON.parse(localStorage.getItem('blocks_watched')) || {}
+        };
+
+        const request = indexedDB.open("BlocksPlatformDB_V2", 2);
+        request.onupgradeneeded = function(e) {
+            db = e.target.result;
+            if (!db.objectStoreNames.contains("messages")) db.createObjectStore("messages", { keyPath: "id" });
+            if (!db.objectStoreNames.contains("completions")) db.createObjectStore("completions", { keyPath: "id" });
+            if (!db.objectStoreNames.contains("videoFiles")) db.createObjectStore("videoFiles", { keyPath: "id" });
+        };
+        request.onsuccess = function(e) {
+            db = e.target.result;
+            loadMessagesFromDB();
+            loadCompletionsFromDB();
+            renderVideos();
+        };
+
+        function isOwnerUser() {
+            return state.currentUser && state.currentUser.name === OWNER_EXACT_NAME;
+        }
+
+        function saveVideosMeta() { localStorage.setItem('blocks_videos', JSON.stringify(state.videos)); }
+        function saveUsersData() { localStorage.setItem('blocks_users', JSON.stringify(state.users)); }
+        function saveGroupsData() { localStorage.setItem('blocks_groups', JSON.stringify(state.groups)); }
+        function saveSessionData() { sessionStorage.setItem('blocks_activeSession', JSON.stringify(state.currentUser)); }
+
+        function saveVideoFileToDB(videoId, fileBlob, callback) {
+            if (!db) return;
+            const tx = db.transaction("videoFiles", "readwrite");
+            tx.objectStore("videoFiles").put({ id: videoId, file: fileBlob });
+            tx.oncomplete = () => { if (callback) callback(); };
+        }
+
+        function getVideoFileFromDB(videoId, callback) {
+            if (!db) return callback(null);
+            const tx = db.transaction("videoFiles", "readonly");
+            const req = tx.objectStore("videoFiles").get(videoId);
+            req.onsuccess = function(e) {
+                callback(e.target.result ? e.target.result.file : null);
+            };
+        }
+
+        function deleteVideoFileFromDB(videoId) {
+            if (!db) return;
+            const tx = db.transaction("videoFiles", "readwrite");
+            tx.objectStore("videoFiles").delete(videoId);
+        }
+
+        function saveMessageToDB(msgObj) {
+            if (!db) return;
+            const tx = db.transaction("messages", "readwrite");
+            tx.objectStore("messages").put(msgObj);
+            tx.oncomplete = () => loadMessagesFromDB();
+        }
+
+        function deleteMessageFromDB(msgId) {
+            if (!db) return;
+            const tx = db.transaction("messages", "readwrite");
+            tx.objectStore("messages").delete(msgId);
+            tx.oncomplete = () => loadMessagesFromDB();
+        }
+
+        function loadMessagesFromDB() {
+            if (!db) return;
+            const tx = db.transaction("messages", "readonly");
+            tx.objectStore("messages").getAll().onsuccess = function(e) {
+                state.messages = e.target.result || [];
+                renderChatMessages();
+                renderInboxMessages();
+            };
+        }
+
+        function saveCompletionToDB(compObj) {
+            if (!db) return;
+            const tx = db.transaction("completions", "readwrite");
+            tx.objectStore("completions").put(compObj);
+            tx.oncomplete = () => loadCompletionsFromDB();
+        }
+
+        function loadCompletionsFromDB() {
+            if (!db) return;
+            const tx = db.transaction("completions", "readonly");
+            tx.objectStore("completions").getAll().onsuccess = function(e) {
+                state.completions = e.target.result || [];
+                renderCompletionsTable();
+            };
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() && password === SUPER_ADMIN_PASS) {
+                state.currentUser = {
+                    email: SUPER_ADMIN_EMAIL,
+                    name: OWNER_EXACT_NAME,
+                    isSuperAdmin: true,
+                    isAdmin: true,
+                    permissions: ['videos', 'addAttachments', 'chat', 'students', 'completions', 'groups']
+                };
+                saveSessionData();
+                initApp();
+                return;
+            }
+
+            const user = state.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+            if (user) {
+                state.currentUser = { ...user, isAdmin: user.role === 'admin', isSuperAdmin: false };
+                saveSessionData();
+                initApp();
+            } else {
+                alert('خطأ في البريد الإلكتروني أو كلمة المرور!');
+            }
+        }
+
+        function promptChangeName() {
+            if (!state.currentUser) return;
+            if (isOwnerUser()) {
+                alert('لا يمكن تغيير اسم المالك الأساسي للمنصة لضمان صلاحيات الحذف الحصرية.');
+                return;
+            }
+            const newName = prompt("أدخل اسمك الجديد:", state.currentUser.name);
+            if (newName && newName.trim() !== "") {
+                state.currentUser.name = newName.trim();
+                saveSessionData();
+                const uIdx = state.users.findIndex(u => u.email === state.currentUser.email);
+                if (uIdx !== -1) { state.users[uIdx].name = newName.trim(); saveUsersData(); }
+                document.getElementById('userNameDisplay').textContent = state.currentUser.name;
+            }
+        }
+
+        function logout() {
+            state.currentUser = null;
+            sessionStorage.removeItem('blocks_activeSession');
+            initApp();
+        }
+
+        function initApp() {
+            const activeSession = JSON.parse(sessionStorage.getItem('blocks_activeSession'));
+            if (activeSession && activeSession.email) {
+                state.currentUser = activeSession;
+                document.getElementById('authSection').classList.add('hidden');
+                document.getElementById('dashboardSection').classList.remove('hidden');
+                document.getElementById('headerUserInfo').classList.remove('hidden');
+                document.getElementById('userNameDisplay').textContent = state.currentUser.name;
+
+                if (isOwnerUser()) {
+                    document.getElementById('ownerDeleteHint').classList.remove('hidden');
+                } else {
+                    document.getElementById('ownerDeleteHint').classList.add('hidden');
+                }
+
+                applyUserPermissions();
+                renderFoldersFilter();
+                renderVideos();
+                renderPermissionsList();
+                renderAttachmentsVideoSelect();
+                loadMessagesFromDB();
+                loadCompletionsFromDB();
+                renderUsersTable();
+                renderGroupsManagement();
+            } else {
+                document.getElementById('authSection').classList.remove('hidden');
+                document.getElementById('dashboardSection').classList.add('hidden');
+                document.getElementById('headerUserInfo').classList.add('hidden');
+            }
+        }
+
+        function applyUserPermissions() {
+            const user = state.currentUser;
+            document.querySelectorAll('.sidebar-menu li').forEach(item => {
+                if (item.id === 'menuVideos' || item.id === 'menuChat') { item.classList.remove('hidden'); return; }
+                if (user.isSuperAdmin) { item.classList.remove('hidden'); }
+                else if (user.isAdmin && user.permissions) {
+                    const map = { menuAddVideo: 'videos', menuAddAttachments: 'addAttachments', menuCompletions: 'completions', menuGroups: 'groups', menuStudents: 'students' };
+                    item.classList.toggle('hidden', !user.permissions.includes(map[item.id]));
+                } else { item.classList.add('hidden'); }
+            });
+            initChatTargetsDropdown();
+            if (!user.isAdmin) switchTab('videos');
+        }
+
+        function toggleInboxDropdown() {
+            document.getElementById('inboxDropdownList').classList.toggle('hidden');
+            renderInboxMessages();
+        }
+
+        function renderInboxMessages() {
+            const container = document.getElementById('inboxMessagesContainer');
+            const badge = document.getElementById('inboxBadgeCount');
+            if (!container || !state.currentUser) return;
+
+            let myInbox = state.currentUser.isAdmin
+                ? state.messages.filter(m => m.senderEmail !== state.currentUser.email)
+                : state.messages.filter(m => m.senderEmail !== state.currentUser.email && m.targetKey === state.currentUser.email);
+
+            if (myInbox.length > 0) { badge.classList.remove('hidden'); badge.textContent = myInbox.length; }
+            else { badge.classList.add('hidden'); }
+
+            container.innerHTML = myInbox.length === 0
+                ? '<p style="padding:15px; text-align:center; color:var(--text-muted);">لا توجد رسائل.</p>'
+                : myInbox.slice(-10).reverse().map(m => `<div class="inbox-item" onclick="jumpToChatMessage('${m.targetKey}')"><div class="inbox-item-sender"><span>${m.senderName}</span><small>${m.date}</small></div><div class="inbox-item-text">${m.originalText}</div></div>`).join('');
+        }
+
+        function jumpToChatMessage(targetKey) {
+            document.getElementById('inboxDropdownList').classList.add('hidden');
+            switchTab('chat');
+            activeChatTarget = targetKey;
+            document.getElementById('chatTargetSelect').value = targetKey;
+            renderChatMessages();
+        }
+
+        function initChatTargetsDropdown() {
+            const select = document.getElementById('chatTargetSelect');
+            if (!select || !state.currentUser) return;
+            select.innerHTML = '';
+
+            if (state.currentUser.isAdmin) {
+                state.groups.forEach((g, idx) => select.innerHTML += `<option value="group_${idx}">👥 جروب: ${g.name}</option>`);
+                state.users.filter(u => u.role === 'student').forEach(u => select.innerHTML += `<option value="${u.email}">👤 طالب: ${u.name}</option>`);
+                if (select.options.length > 0 && !activeChatTarget) activeChatTarget = select.options[0].value;
+            } else {
+                select.innerHTML = `<option value="${state.currentUser.email}">💬 محادثتي الخاصة مع المعلم</option>`;
+                state.groups.forEach((g, idx) => {
+                    if (g.students && g.students.includes(state.currentUser.email)) select.innerHTML += `<option value="group_${idx}">👥 جروب: ${g.name}</option>`;
+                });
+                if (!activeChatTarget) activeChatTarget = state.currentUser.email;
+            }
+            if (activeChatTarget) select.value = activeChatTarget;
+            renderChatMessages();
+        }
+
+        function changeActiveChatTarget() {
+            activeChatTarget = document.getElementById('chatTargetSelect').value;
+            renderChatMessages();
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+            ['tabVideos', 'tabChat', 'tabAddVideo', 'tabAddAttachments', 'tabCompletions', 'tabGroups', 'tabStudents'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            const tabMap = { videos: ['tabVideos', 'menuVideos'], chat: ['tabChat', 'menuChat'], addVideo: ['tabAddVideo', 'menuAddVideo'], addAttachments: ['tabAddAttachments', 'menuAddAttachments'], completions: ['tabCompletions', 'menuCompletions'], groups: ['tabGroups', 'menuGroups'], students: ['tabStudents', 'menuStudents'] };
+            document.getElementById(tabMap[tab][0]).classList.remove('hidden');
+            document.getElementById(tabMap[tab][1]).classList.add('active');
+            if (tab === 'videos') renderVideos();
+            if (tab === 'chat') { initChatTargetsDropdown(); loadMessagesFromDB(); }
+        }
+
+        function toggleRoleOptions() {
+            const isAdmin = document.getElementById('userRoleSelect').value === 'admin';
+            document.getElementById('adminPermissionsGroup').classList.toggle('hidden', !isAdmin);
+            document.getElementById('studentVideosGroup').classList.toggle('hidden', isAdmin);
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInputText');
+            const text = input.value.trim();
+            if (!text || !activeChatTarget) return;
+            saveMessageToDB({
+                id: Date.now().toString() + "_" + Math.random(),
+                targetKey: activeChatTarget,
+                senderEmail: state.currentUser.email,
+                senderName: state.currentUser.name,
+                originalText: text,
+                fileData: null,
+                date: new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})
+            });
+            input.value = '';
+        }
+
+        function sendChatFile(input) {
+            if (!input.files || !input.files[0] || !activeChatTarget) return;
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                saveMessageToDB({
+                    id: Date.now().toString() + "_" + Math.random(),
+                    targetKey: activeChatTarget,
+                    senderEmail: state.currentUser.email,
+                    senderName: state.currentUser.name,
+                    originalText: `واجب/ملف مرفق: ${file.name}`,
+                    fileData: { name: file.name, type: file.type, data: e.target.result },
+                    date: new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})
+                });
+                input.value = '';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleChatKeyPress(e) { if (e.key === 'Enter') sendChatMessage(); }
+
+        function handleMessageClick(msgId, senderEmail) {
+            if (!state.currentUser || (state.currentUser.email !== senderEmail && !state.currentUser.isAdmin)) return;
+            const choice = prompt(`خيارات الرسالة:\n- اكتب delete لحذفها من عند الكل\n- أو اكتب التعديل الجديد لإرسالها:`);
+            if (!choice) return;
+            if (choice.trim().toLowerCase() === 'delete') deleteMessageFromDB(msgId);
+            else {
+                const msg = state.messages.find(m => m.id === msgId);
+                if (msg) { msg.originalText = choice.trim(); saveMessageToDB(msg); }
+            }
+        }
+
+        function renderChatMessages() {
+            const box = document.getElementById('chatMessagesBox');
+            if (!box || !state.currentUser || !activeChatTarget) return;
+            const msgs = state.messages.filter(m => m.targetKey === activeChatTarget);
+            box.innerHTML = msgs.length === 0 ? '<p style="color:var(--text-muted); text-align:center; margin-top:20px;">لا توجد رسائل بعد.</p>' : '';
+            msgs.forEach(m => {
+                const isMine = m.senderEmail === state.currentUser.email;
+                const div = document.createElement('div');
+                div.className = `chat-bubble ${isMine ? 'my-msg' : 'other-msg'}`;
+                if (isMine || state.currentUser.isAdmin) div.onclick = () => handleMessageClick(m.id, m.senderEmail);
+                let fileHtml = '';
+                if (m.fileData) {
+                    fileHtml = m.fileData.type.startsWith('image/')
+                        ? `<a href="${m.fileData.data}" download="${m.fileData.name}"><img src="${m.fileData.data}" class="chat-media-preview"></a>`
+                        : `<a href="${m.fileData.data}" download="${m.fileData.name}" class="chat-file-download-card"><i class="fa-solid fa-download"></i> ${m.fileData.name}</a>`;
+                }
+                div.innerHTML = `<span class="chat-sender">${m.senderName} (${m.date})</span><div>${m.fileData ? '' : m.originalText}</div>${fileHtml}`;
+                box.appendChild(div);
+            });
+            box.scrollTop = box.scrollHeight;
+        }
+
+        // رفع الفيديو مباشرة من الجهاز وتخزينه في IndexedDB
+        function handleAddVideoForm(e) {
+            e.preventDefault();
+            const folder = document.getElementById('videoFolder').value.trim();
+            const title = document.getElementById('videoTitle').value.trim();
+            const fileInput = document.getElementById('videoFileUpload');
+            const btn = document.getElementById('uploadVideoBtn');
+
+            if (!fileInput.files || !fileInput.files[0]) {
+                alert('يرجى اختيار ملف الفيديو من جهازك أولاً!');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const videoId = Date.now().toString() + "_" + Math.random().toString(36).substr(2, 5);
+
+            btn.disabled = true;
+            btn.textContent = 'جاري رفع وحفظ الفيديو...';
+
+            saveVideoFileToDB(videoId, file, () => {
+                state.videos.push({ id: videoId, folder, title, fileName: file.name });
+                saveVideosMeta();
+
+                btn.disabled = false;
+                btn.textContent = 'رفع وحفظ الفيديو';
+                document.getElementById('videoTitle').value = '';
+                fileInput.value = '';
+
+                alert('تم رفع الفيديو من جهازك وحفظه بنجاح!');
+                renderFoldersFilter();
+                renderVideos();
+                renderPermissionsList();
+                renderAttachmentsVideoSelect();
+                switchTab('videos');
+            });
+        }
+
+        function renderAttachmentsVideoSelect() {
+            const select = document.getElementById('targetVideoSelect');
+            if (select) select.innerHTML = state.videos.map(v => `<option value="${v.id}">[${v.folder}] ${v.title}</option>`).join('');
+        }
+
+        function handleSaveAttachments(e) {
+            e.preventDefault();
+            const videoObj = state.videos.find(v => v.id === document.getElementById('targetVideoSelect').value);
+            if (!videoObj) return;
+            readFilesAsDataURLs(document.getElementById('attachPptFiles').files, ppts => {
+                readFilesAsDataURLs(document.getElementById('attachImgFiles').files, imgs => {
+                    videoObj.pptFiles = (videoObj.pptFiles || []).concat(ppts);
+                    videoObj.imageFiles = (videoObj.imageFiles || []).concat(imgs);
+                    saveVideosMeta();
+                    alert('تم حفظ الملحقات!');
+                    switchTab('videos');
+                });
+            });
+        }
+
+        function readFilesAsDataURLs(files, cb) {
+            if (!files || files.length === 0) return cb([]);
+            let res = [], done = 0;
+            Array.from(files).forEach((f, i) => {
+                const r = new FileReader();
+                r.onload = e => { res[i] = { name: f.name, type: f.type, data: e.target.result }; if (++done === files.length) cb(res); };
+                r.readAsDataURL(f);
+            });
+        }
+
+        function renderFoldersFilter() {
+            const bar = document.getElementById('folderFilterBar');
+            if (!bar || !state.currentUser) return;
+            let userVideos = state.currentUser.isAdmin ? state.videos : state.videos.filter(v => (state.currentUser.allowedVideos || []).includes(v.id));
+            const folders = [...new Set(userVideos.map(v => v.folder))];
+            if (!currentFolderFilter || !folders.includes(currentFolderFilter)) currentFolderFilter = folders[0] || null;
+
+            const ownerCanDelete = isOwnerUser();
+            bar.innerHTML = folders.map(f => `
+                <div class="folder-chip-wrapper">
+                    <div class="folder-chip ${currentFolderFilter === f ? 'active' : ''}" onclick="filterFolder('${f}')">📁 ${f}</div>
+                    ${ownerCanDelete ? `<button class="btn-delete-folder" onclick="deleteEntireSessionFolder('${f}')" title="مسح ملف السيشن بالكامل (حصري للمالك)"><i class="fa-solid fa-trash"></i></button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function filterFolder(folderName) {
+            currentFolderFilter = folderName;
+            renderFoldersFilter();
+            renderVideos();
+        }
+
+        function deleteEntireSessionFolder(folderName) {
+            if (!isOwnerUser()) {
+                alert('عذراً! هذه الخاصية متاحة لـ Amir Mohamed(Onwer) فقط.');
+                return;
+            }
+            if (confirm(`هل أنت متأكد من مسح ملف السيشن "${folderName}" بجميع الفيديوهات التي بداخله نهائياً؟`)) {
+                const videosToDelete = state.videos.filter(v => v.folder === folderName);
+                videosToDelete.forEach(v => deleteVideoFileFromDB(v.id));
+                state.videos = state.videos.filter(v => v.folder !== folderName);
+                saveVideosMeta();
+                currentFolderFilter = null;
+                renderFoldersFilter();
+                renderVideos();
+                renderPermissionsList();
+                renderAttachmentsVideoSelect();
+            }
+        }
+
+        function deleteSingleVideo(videoId) {
+            if (!isOwnerUser()) {
+                alert('عذراً! هذه الخاصية متاحة لـ Amir Mohamed(Onwer) فقط.');
+                return;
+            }
+            if (confirm('هل أنت متأكد من مسح هذا الفيديو فقط؟')) {
+                deleteVideoFileFromDB(videoId);
+                state.videos = state.videos.filter(v => v.id !== videoId);
+                saveVideosMeta();
+                renderFoldersFilter();
+                renderVideos();
+                renderPermissionsList();
+                renderAttachmentsVideoSelect();
+            }
+        }
+
+        function renderVideos() {
+            const container = document.getElementById('videoList');
+            if (!container || !state.currentUser) return;
+
+            activeObjectURLs.forEach(url => URL.revokeObjectURL(url));
+            activeObjectURLs = [];
+
+            let list = state.currentUser.isAdmin ? state.videos : state.videos.filter(v => (state.currentUser.allowedVideos || []).includes(v.id));
+            if (currentFolderFilter) list = list.filter(v => v.folder === currentFolderFilter);
+
+            const ownerCanDelete = isOwnerUser();
+            container.innerHTML = list.length === 0 ? '<p style="color:var(--text-muted);">لا توجد فيديوهات حالياً.</p>' : '';
+
+            list.forEach(v => {
+                const isWatched = !state.currentUser.isAdmin && (state.watchedVideos[state.currentUser.email] || []).includes(v.id);
+                let filesHtml = '';
+                if ((v.pptFiles && v.pptFiles.length) || (v.imageFiles && v.imageFiles.length)) {
+                    filesHtml = `<div class="attached-files-box">
+                        ${(v.pptFiles || []).map(f => `<a href="${f.data}" download="${f.name}" class="file-link-item"><i class="fa-solid fa-download"></i> ${f.name}</a>`).join('')}
+                        <div style="display:flex; gap:8px; margin-top:5px;">${(v.imageFiles || []).map(img => `<a href="${img.data}" download="${img.name}"><img src="${img.data}" class="lesson-img-preview"></a>`).join('')}</div>
+                    </div>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.innerHTML = `
+                    <div class="video-player-container" id="player_${v.id}">
+                        <span style="color:var(--text-muted); font-size:0.85rem;">جاري تحميل الفيديو...</span>
+                    </div>
+                    <div class="video-info">
+                        <div>
+                            <span class="video-folder-tag">📁 ${v.folder}</span>
+                            <div class="video-title">${v.title}</div>
+                        </div>
+                        ${filesHtml}
+                        ${isWatched ? '<div class="status-watched-badge">✅ تم المشاهدة</div>' : ''}
+                        ${ownerCanDelete ? `<button onclick="deleteSingleVideo('${v.id}')" style="background:var(--danger); color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:0.85rem; margin-top:10px;"><i class="fa-solid fa-trash-can"></i> مسح هذا الفيديو</button>` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+
+                getVideoFileFromDB(v.id, fileBlob => {
+                    const playerBox = document.getElementById(`player_${v.id}`);
+                    if (!playerBox) return;
+                    if (fileBlob) {
+                        const blobUrl = URL.createObjectURL(fileBlob);
+                        activeObjectURLs.push(blobUrl);
+                        playerBox.innerHTML = `<video src="${blobUrl}" controls onended="markVideoAsWatched('${v.id}')"></video>`;
+                    } else {
+                        playerBox.innerHTML = `<span style="color:var(--danger); font-size:0.85rem;">لم يتم العثور على ملف الفيديو</span>`;
+                    }
+                });
+            });
+        }
+
+        function markVideoAsWatched(videoId) {
+            if (!state.currentUser || state.currentUser.isAdmin) return;
+            const email = state.currentUser.email;
+            state.watchedVideos[email] = state.watchedVideos[email] || [];
+            if (!state.watchedVideos[email].includes(videoId)) {
+                state.watchedVideos[email].push(videoId);
+                localStorage.setItem('blocks_watched', JSON.stringify(state.watchedVideos));
+                renderVideos();
+                const allowed = state.currentUser.allowedVideos || [];
+                if (allowed.length > 0 && allowed.every(id => state.watchedVideos[email].includes(id))) {
+                    const trigId = `hw_${email}`;
+                    if (!state.messages.some(m => m.id === trigId)) {
+                        saveMessageToDB({
+                            id: trigId, targetKey: email, senderEmail: SUPER_ADMIN_EMAIL, senderName: OWNER_EXACT_NAME,
+                            originalText: `اعمل الواجب يا ${state.currentUser.name}`, fileData: null,
+                            date: new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})
+                        });
+                    }
+                }
+            }
+        }
+
+        function renderCompletionsTable() {
+            const tbody = document.getElementById('completionsTableBody');
+            if (tbody) tbody.innerHTML = state.completions.map(c => `<tr><td>${c.studentName}</td><td>${c.studentEmail}</td><td>${c.courseName}</td><td>${c.date}</td></tr>`).join('');
+        }
+
+        function renderPermissionsList() {
+            const container = document.getElementById('studentVideoPermissions');
+            if (container) container.innerHTML = state.videos.map(v => `<label class="checkbox-item"><input type="checkbox" value="${v.id}" class="video-perm-check"><span>[${v.folder}] ${v.title}</span></label>`).join('');
+        }
+
+        function openEditStudentModal(email) {
+            const st = state.users.find(u => u.email === email);
+            if (!st) return;
+            document.getElementById('editStudentEmail').value = email;
+            document.getElementById('editStudentVideosList').innerHTML = state.videos.map(v => `<label class="checkbox-item"><input type="checkbox" value="${v.id}" class="edit-video-perm-check" ${(st.allowedVideos || []).includes(v.id) ? 'checked' : ''}><span>[${v.folder}] ${v.title}</span></label>`).join('');
+            document.getElementById('editStudentModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() { document.getElementById('editStudentModal').classList.add('hidden'); }
+
+        function saveStudentPermissionsEdit() {
+            const st = state.users.find(u => u.email === document.getElementById('editStudentEmail').value);
+            if (st) {
+                st.allowedVideos = Array.from(document.querySelectorAll('.edit-video-perm-check:checked')).map(c => c.value);
+                saveUsersData(); closeEditModal(); renderUsersTable();
+            }
+        }
+
+        function renderGroupsManagement() {
+            const box = document.getElementById('groupStudentsCheckboxes');
+            if (box) box.innerHTML = state.users.filter(u => u.role === 'student').map(s => `<label class="checkbox-item"><input type="checkbox" value="${s.email}" class="group-student-box"><span>${s.name}</span></label>`).join('');
+            const list = document.getElementById('groupsListContainer');
+            if (list) list.innerHTML = state.groups.map((g, i) => `<div class="group-card-item"><div><strong>${g.name}</strong> (${g.students.length} طلاب)</div><button onclick="deleteGroup(${i})" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:4px;">حذف</button></div>`).join('');
+        }
+
+        function handleCreateGroup(e) {
+            e.preventDefault();
+            state.groups.push({ name: document.getElementById('groupNameInput').value.trim(), students: Array.from(document.querySelectorAll('.group-student-box:checked')).map(b => b.value) });
+            saveGroupsData(); document.getElementById('groupNameInput').value = ''; renderGroupsManagement(); initChatTargetsDropdown();
+        }
+
+        function deleteGroup(idx) { state.groups.splice(idx, 1); saveGroupsData(); renderGroupsManagement(); initChatTargetsDropdown(); }
+
+        function handleAddUser(e) {
+            e.preventDefault();
+            const role = document.getElementById('userRoleSelect').value;
+            const user = {
+                id: Date.now().toString(),
+                name: document.getElementById('userNameInput').value,
+                email: document.getElementById('userEmailInput').value.trim(),
+                password: document.getElementById('userPasswordInput').value,
+                role,
+                permissions: role === 'admin' ? Array.from(document.querySelectorAll('.admin-perm-box:checked')).map(b => b.value) : [],
+                allowedVideos: role === 'student' ? Array.from(document.querySelectorAll('.video-perm-check:checked')).map(c => c.value) : []
+            };
+            state.users.push(user); saveUsersData(); renderUsersTable(); renderGroupsManagement(); initChatTargetsDropdown();
+            alert('تم إضافة المستخدم!');
+        }
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            if (tbody) tbody.innerHTML = state.users.map((u, i) => `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.role === 'admin' ? 'مشرف' : 'طالب'}</td><td>${u.role === 'student' ? `<button onclick="openEditStudentModal('${u.email}')" style="background:var(--accent); border:none; padding:4px 8px; border-radius:4px; margin-left:5px;">صلاحيات</button>` : ''}<button onclick="deleteUser(${i})" style="background:var(--danger); color:white; border:none; padding:4px 8px; border-radius:4px;">حذف</button></td></tr>`).join('');
+        }
+
+        function deleteUser(idx) { state.users.splice(idx, 1); saveUsersData(); renderUsersTable(); }
+
+        initApp();
+    </script>
+</body>
+</html>
