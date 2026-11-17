@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة البرمجة - Blocks & Python</title>
+    <title>تعلم البرمجة مع أمير</title>
     
     <link id="dynamicFavicon" rel="icon" type="image/png" href="https://img.icons8.com/color/96/code.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -46,11 +46,16 @@
         body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; transition: background-color 0.3s ease; }
 
         /* الهيدر */
-        header { background-color: var(--card-bg); border-bottom: 2px solid var(--header-border); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .header-brand { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.55rem; font-weight: bold; color: var(--primary-color); }
+        header { background-color: var(--card-bg); border-bottom: 2px solid var(--header-border); padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .header-brand { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
         
-        body.theme-python .logo span {
+        /* صورة أمير المصغرة في الهيدر */
+        .amir-avatar-wrapper { position: relative; width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--primary-color); overflow: hidden; cursor: pointer; flex-shrink: 0; box-shadow: 0 0 10px rgba(0,0,0,0.4); transition: 0.2s; background: #0f172a; }
+        .amir-avatar-wrapper:hover { transform: scale(1.08); }
+        .amir-avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 1.35rem; font-weight: bold; color: var(--primary-color); }
+        body.theme-python .logo span.track-tag {
             background: linear-gradient(90deg, #38bdf8, #ffd43b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -62,7 +67,7 @@
         .support-badge { background-color: rgba(37, 211, 102, 0.15); border: 1px solid var(--whatsapp); color: #4ade80; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; transition: 0.2s; }
         .support-badge:hover { background-color: var(--whatsapp); color: #fff; }
 
-        /* شاشة اختيار المسار (Blocks أو Python) */
+        /* شاشة اختيار المسار */
         .track-selector-container { display: flex; flex-direction: column; justify-content: center; align-items: center; flex: 1; padding: 30px 20px; text-align: center; }
         .track-cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; width: 100%; max-width: 720px; margin-top: 30px; }
         .track-card { background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 16px; padding: 35px 25px; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 15px; }
@@ -88,8 +93,8 @@
 
         /* تسجيل الدخول */
         .auth-container { display: flex; justify-content: center; align-items: center; flex: 1; padding: 20px; }
-        .auth-card { background-color: var(--card-bg); border: 2px solid var(--header-border); border-radius: 12px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
-        .auth-card h2 { text-align: center; margin-bottom: 25px; color: var(--primary-color); }
+        .auth-card { background-color: var(--card-bg); border: 2px solid var(--header-border); border-radius: 12px; padding: 40px; width: 100%; max-width: 410px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+        .auth-card h2 { text-align: center; margin-bottom: 25px; color: var(--primary-color); font-size: 1.35rem; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; }
         .form-group input, .form-group select { width: 100%; padding: 12px; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 6px; color: white; font-size: 1rem; }
@@ -160,6 +165,7 @@
         .checkbox-group { display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto; background: var(--bg-dark); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); }
         .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
         .checkbox-item input { width: auto; accent-color: var(--primary-color); }
+        .track-badge-pill { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-left: 4px; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -168,11 +174,17 @@
     <!-- الهيدر -->
     <header>
         <div class="header-brand">
-            <div class="logo" id="headerLogo">
-                <i class="fa-solid fa-code"></i> <span>أكاديمية البرمجة</span>
+            <!-- صورة أمير المصغرة ممسكاً بأيقونة 4A Coding School -->
+            <div class="amir-avatar-wrapper" onclick="document.getElementById('amirAvatarInput').click()" title="اضغط لتغيير أو تحديث صورة أمير (4A Coding School)">
+                <img id="amirAvatarImg" src="amir.jpg" alt="Amir - 4A Coding School" onerror="this.src='https://img.icons8.com/color/96/student-male--v1.png'">
+                <input type="file" id="amirAvatarInput" accept="image/*" class="hidden" onchange="updateAmirAvatar(this)">
             </div>
 
-            <button id="switchTrackBtn" class="btn-switch-track hidden" onclick="returnToTrackSelection()" title="تبديل المسار التعليمي">
+            <div class="logo" id="headerLogo">
+                <span>تعلم البرمجة مع أمير</span>
+            </div>
+
+            <button id="switchTrackBtn" class="btn-switch-track hidden" onclick="forceLogoutAndSwitchTrack()" title="تبديل الكورس (يتطلب تسجيل دخول)">
                 <i class="fa-solid fa-repeat"></i> <span>تغيير الكورس</span>
             </button>
 
@@ -203,8 +215,8 @@
 
     <!-- 1. شاشة اختيار المسار (Blocks أو Python) -->
     <div class="track-selector-container" id="trackSelectionSection">
-        <h1 style="font-size: 2rem; margin-bottom: 10px;">اختر المسار التعليمي للدخول</h1>
-        <p style="color: var(--text-muted);">حدد الكورس الخاص بك للانتقال إلى الفيديوهات والجروبات</p>
+        <h1 style="font-size: 2rem; margin-bottom: 10px; color: var(--primary-color);">أهلاً بك في منصة تعلم البرمجة مع أمير</h1>
+        <p style="color: var(--text-muted);">اختر المسار التعليمي المخصص لإيميلك للدخول</p>
 
         <div class="track-cards-grid">
             <div class="track-card blocks-card" onclick="selectTrack('blocks')">
@@ -227,7 +239,7 @@
         </div>
     </div>
 
-    <!-- 2. شاشة تسجيل الدخول -->
+    <!-- 2. شاشة تسجيل الدخول الإجبارية -->
     <div class="auth-container hidden" id="authSection">
         <div class="auth-card">
             <h2 id="loginTitle">تسجيل الدخول</h2>
@@ -268,7 +280,7 @@
                     <i class="fa-solid fa-layer-group"></i> <span>إدارة الجروبات</span>
                 </li>
                 <li id="menuStudents" class="admin-only hidden" onclick="switchTab('students')">
-                    <i class="fa-solid fa-users"></i> <span>إدارة المستخدمين</span>
+                    <i class="fa-solid fa-users"></i> <span>إدارة المستخدمين والمسارات</span>
                 </li>
             </ul>
         </div>
@@ -379,14 +391,23 @@
                 <div id="groupsListContainer" style="margin-top: 20px;"></div>
             </div>
 
-            <!-- تبويب المستخدمين -->
+            <!-- تبويب المستخدمين وتحديد المسارات -->
             <div id="tabStudents" class="hidden">
-                <h2><i class="fa-solid fa-user-plus"></i> إضافة مستخدم جديد</h2>
-                <div style="max-width: 600px; margin-top: 20px;">
+                <h2><i class="fa-solid fa-user-plus"></i> إضافة مستخدم وتحديد مساره (Blocks / Python)</h2>
+                <div style="max-width: 600px; margin-top: 20px; background:var(--card-bg); padding:20px; border-radius:8px; border:1px solid var(--header-border);">
                     <form onsubmit="handleAddUser(event)">
                         <div class="form-group"><label>الاسم</label><input type="text" id="userNameInput" required></div>
                         <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="userEmailInput" required></div>
                         <div class="form-group"><label>كلمة المرور</label><input type="password" id="userPasswordInput" required></div>
+                        
+                        <div class="form-group">
+                            <label style="color: var(--primary-color); font-weight: bold;">المسارات المسموحة لهذا الإيميل:</label>
+                            <div class="checkbox-group" style="flex-direction: row; gap: 20px;">
+                                <label class="checkbox-item"><input type="checkbox" value="blocks" id="allowTrackBlocks" checked> <span>مسار Blocks</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="python" id="allowTrackPython"> <span>مسار Python</span></label>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label>نوع الحساب:</label>
                             <select id="userRoleSelect" onchange="toggleRoleOptions()">
@@ -406,26 +427,37 @@
                             </div>
                         </div>
                         <div class="form-group" id="studentVideosGroup">
-                            <label>الفيديوهات المسموحة للطالب:</label>
+                            <label>الفيديوهات المسموحة للطالب في الكورس الحالي:</label>
                             <div class="checkbox-group" id="studentVideoPermissions"></div>
                         </div>
                         <button type="submit" class="btn-primary">إنشاء الحساب</button>
                     </form>
                 </div>
                 <table class="data-table">
-                    <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>نوع الحساب</th><th>إجراءات</th></tr></thead>
+                    <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>المسارات المسموحة</th><th>نوع الحساب</th><th>إجراءات</th></tr></thead>
                     <tbody id="usersTableBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- نافذة تعديل صلاحيات الطالب -->
+    <!-- نافذة تعديل صلاحيات والمسارات الطالب -->
     <div id="editStudentModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center; z-index:9999;">
         <div style="background:var(--card-bg); padding:30px; border-radius:12px; border:2px solid var(--primary-color); width:90%; max-width:500px;">
-            <h3 id="editModalTitle" style="color:var(--primary-color); margin-bottom:15px;">تعديل الفيديوهات المسموحة</h3>
+            <h3 id="editModalTitle" style="color:var(--primary-color); margin-bottom:15px;">تعديل المسارات والفيديوهات المسموحة</h3>
             <input type="hidden" id="editStudentEmail">
-            <div class="checkbox-group" id="editStudentVideosList" style="max-height:250px; margin-bottom:20px;"></div>
+            
+            <div class="form-group">
+                <label style="color:var(--secondary-color);">المسارات المسموحة لهذا الإيميل:</label>
+                <div class="checkbox-group" style="flex-direction: row; gap: 20px;">
+                    <label class="checkbox-item"><input type="checkbox" id="editTrackBlocks"> <span>Blocks</span></label>
+                    <label class="checkbox-item"><input type="checkbox" id="editTrackPython"> <span>Python</span></label>
+                </div>
+            </div>
+
+            <label style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:8px;">الفيديوهات المسموحة في المسار الحالي:</label>
+            <div class="checkbox-group" id="editStudentVideosList" style="max-height:200px; margin-bottom:20px;"></div>
+            
             <div style="display:flex; gap:10px;">
                 <button onclick="saveStudentPermissionsEdit()" class="btn-primary" style="flex:1;">حفظ</button>
                 <button onclick="closeEditModal()" style="background:var(--danger); color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">إلغاء</button>
@@ -439,7 +471,9 @@
         const OWNER_EXACT_NAME = "Amir Mohamed(Onwer)";
 
         let db;
-        let currentTrack = localStorage.getItem('selected_coding_track') || null; // 'blocks' أو 'python'
+        // متغيرات ذاكرة مؤقتة (تُمسح تلقائياً عند عمل Refresh أو تغيير الكورس لإجبار تسجيل الدخول)
+        let currentTrack = null;
+        let activeSessionUser = null;
         let currentFolderFilter = null;
         let activeChatTarget = null;
         let activeObjectURLs = [];
@@ -456,8 +490,27 @@
             watchedVideos: {}
         };
 
-        // فتح قاعدة بيانات موحدة تدعم تخزين ملفات الفيديو الضخمة
-        const request = indexedDB.open("UnifiedCodingAcademyDB_V1", 1);
+        // تحميل صورة أمير المصغرة إن كانت محفوظة مسبقاً
+        (function loadSavedAmirAvatar() {
+            const savedAvatar = localStorage.getItem('amir_4a_avatar');
+            if (savedAvatar) {
+                document.getElementById('amirAvatarImg').src = savedAvatar;
+            }
+        })();
+
+        function updateAmirAvatar(input) {
+            if (!input.files || !input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                localStorage.setItem('amir_4a_avatar', e.target.result);
+                document.getElementById('amirAvatarImg').src = e.target.result;
+                alert('تم حفظ صورتك مع أيقونة 4A Coding School في المنصة بنجاح!');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        // فتح قاعدة بيانات موحدة
+        const request = indexedDB.open("AmirCodingAcademyDB_V1", 1);
         request.onupgradeneeded = function(e) {
             db = e.target.result;
             if (!db.objectStoreNames.contains("messages")) db.createObjectStore("messages", { keyPath: "id" });
@@ -469,24 +522,29 @@
             bootPlatform();
         };
 
-        // اختيار المسار (Blocks أو Python) وتطبيق الثيم الخاص به
+        // عند اختيار الكورس يطلب تسجيل الدخول إجبارياً
         function selectTrack(track) {
             currentTrack = track;
-            localStorage.setItem('selected_coding_track', track);
+            activeSessionUser = null;
+            state.currentUser = null;
             currentFolderFilter = null;
             activeChatTarget = null;
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
             applyTrackTheme(track);
             loadTrackState(track);
             bootPlatform();
         }
 
-        function returnToTrackSelection() {
+        // عند الضغط على تغيير الكورس يتم تسجيل الخروج إجبارياً والعودة لشاشة الاختيار
+        function forceLogoutAndSwitchTrack() {
             currentTrack = null;
-            localStorage.removeItem('selected_coding_track');
+            activeSessionUser = null;
+            state.currentUser = null;
             document.body.className = 'theme-blocks';
-            document.title = 'منصة البرمجة - Blocks & Python';
+            document.title = 'تعلم البرمجة مع أمير';
             document.getElementById('dynamicFavicon').href = 'https://img.icons8.com/color/96/code.png';
-            document.getElementById('headerLogo').innerHTML = '<i class="fa-solid fa-code"></i> <span>أكاديمية البرمجة</span>';
+            document.getElementById('headerLogo').innerHTML = '<span>تعلم البرمجة مع أمير</span>';
             document.getElementById('switchTrackBtn').classList.add('hidden');
             document.getElementById('headerUserInfo').classList.add('hidden');
             document.getElementById('authSection').classList.add('hidden');
@@ -502,24 +560,33 @@
 
             if (track === 'python') {
                 document.body.className = 'theme-python';
-                document.title = 'Python';
+                document.title = 'تعلم البرمجة مع أمير - Python';
                 favicon.href = 'https://img.icons8.com/color/96/python--v1.png';
-                logo.innerHTML = '<i class="fa-brands fa-python"></i> <span>Python</span>';
-                loginTitle.innerHTML = '<i class="fa-brands fa-python" style="color:#38bdf8;"></i> تسجيل الدخول - Python';
+                logo.innerHTML = '<span>تعلم البرمجة مع أمير</span> <span class="track-tag" style="font-size:1rem;">| Python <i class="fa-brands fa-python"></i></span>';
+                loginTitle.innerHTML = '<i class="fa-brands fa-python" style="color:#38bdf8;"></i> تسجيل الدخول - مسار Python';
                 libHeading.innerHTML = '<i class="fa-brands fa-python"></i> مكتبة دروس Python';
             } else {
                 document.body.className = 'theme-blocks';
-                document.title = 'Blocks';
+                document.title = 'تعلم البرمجة مع أمير - Blocks';
                 favicon.href = 'https://img.icons8.com/color/96/puzzle.png';
-                logo.innerHTML = '<i class="fa-solid fa-cubes"></i> <span>Blocks</span>';
-                loginTitle.innerHTML = '<i class="fa-solid fa-cubes"></i> تسجيل الدخول - Blocks';
+                logo.innerHTML = '<span>تعلم البرمجة مع أمير</span> <span style="font-size:1rem;">| Blocks <i class="fa-solid fa-cubes"></i></span>';
+                loginTitle.innerHTML = '<i class="fa-solid fa-cubes"></i> تسجيل الدخول - مسار Blocks';
                 libHeading.innerHTML = '<i class="fa-solid fa-cubes"></i> مكتبة دروس Blocks';
             }
             document.getElementById('switchTrackBtn').classList.remove('hidden');
         }
 
+        // قائمة المستخدمين موحدة لكي نتحقق من المسارات المسموحة لكل إيميل
+        function getAllUsers() {
+            return JSON.parse(localStorage.getItem('amir_academy_users')) || [];
+        }
+
+        function saveUsersData() {
+            localStorage.setItem('amir_academy_users', JSON.stringify(state.users));
+        }
+
         function loadTrackState(track) {
-            state.users = JSON.parse(localStorage.getItem(`${track}_users`)) || [];
+            state.users = getAllUsers();
             state.videos = JSON.parse(localStorage.getItem(`${track}_videos`)) || [];
             state.groups = JSON.parse(localStorage.getItem(`${track}_groups`)) || [];
             state.watchedVideos = JSON.parse(localStorage.getItem(`${track}_watched`)) || {};
@@ -530,9 +597,7 @@
         }
 
         function saveVideosMeta() { localStorage.setItem(`${currentTrack}_videos`, JSON.stringify(state.videos)); }
-        function saveUsersData() { localStorage.setItem(`${currentTrack}_users`, JSON.stringify(state.users)); }
         function saveGroupsData() { localStorage.setItem(`${currentTrack}_groups`, JSON.stringify(state.groups)); }
-        function saveSessionData() { sessionStorage.setItem('unified_activeSession', JSON.stringify(state.currentUser)); }
 
         function saveMultipleVideoFilesToDB(items, callback) {
             if (!db || items.length === 0) return callback();
@@ -595,32 +660,44 @@
             };
         }
 
+        // التحقق من تسجيل الدخول ومن أن الإيميل مسموح له دخول المسار المختار (Blocks أو Python)
         function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
 
             if (email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() && password === SUPER_ADMIN_PASS) {
-                state.currentUser = {
+                activeSessionUser = {
                     email: SUPER_ADMIN_EMAIL,
                     name: OWNER_EXACT_NAME,
                     isSuperAdmin: true,
                     isAdmin: true,
+                    allowedTracks: ['blocks', 'python'],
                     permissions: ['videos', 'addAttachments', 'chat', 'students', 'completions', 'groups']
                 };
-                saveSessionData();
+                state.currentUser = activeSessionUser;
                 bootPlatform();
                 return;
             }
 
+            state.users = getAllUsers();
             const user = state.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
-            if (user) {
-                state.currentUser = { ...user, isAdmin: user.role === 'admin', isSuperAdmin: false };
-                saveSessionData();
-                bootPlatform();
-            } else {
-                alert('خطأ في البريد الإلكتروني أو كلمة المرور في هذا المسار!');
+            
+            if (!user) {
+                alert('خطأ في البريد الإلكتروني أو كلمة المرور!');
+                return;
             }
+
+            const allowedTracks = user.allowedTracks || ['blocks'];
+            if (!allowedTracks.includes(currentTrack)) {
+                const allowedNames = allowedTracks.map(t => t === 'python' ? 'Python' : 'Blocks').join(' و ');
+                alert(`عذراً! هذا الإيميل غير مسموح له بدخول مسار (${currentTrack === 'python' ? 'Python' : 'Blocks'}).\nالمسارات المسموحة لك هي: (${allowedNames}).`);
+                return;
+            }
+
+            activeSessionUser = { ...user, isAdmin: user.role === 'admin', isSuperAdmin: false };
+            state.currentUser = activeSessionUser;
+            bootPlatform();
         }
 
         function promptChangeName() {
@@ -632,7 +709,7 @@
             const newName = prompt("أدخل اسمك الجديد:", state.currentUser.name);
             if (newName && newName.trim() !== "") {
                 state.currentUser.name = newName.trim();
-                saveSessionData();
+                activeSessionUser.name = newName.trim();
                 const uIdx = state.users.findIndex(u => u.email === state.currentUser.email);
                 if (uIdx !== -1) { state.users[uIdx].name = newName.trim(); saveUsersData(); }
                 document.getElementById('userNameDisplay').textContent = state.currentUser.name;
@@ -640,14 +717,16 @@
         }
 
         function logout() {
+            activeSessionUser = null;
             state.currentUser = null;
-            sessionStorage.removeItem('unified_activeSession');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
             bootPlatform();
         }
 
         function bootPlatform() {
             if (!currentTrack) {
-                returnToTrackSelection();
+                forceLogoutAndSwitchTrack();
                 return;
             }
 
@@ -655,24 +734,8 @@
             loadTrackState(currentTrack);
             document.getElementById('trackSelectionSection').classList.add('hidden');
 
-            const activeSession = JSON.parse(sessionStorage.getItem('unified_activeSession'));
-            if (activeSession && activeSession.email) {
-                // التحقق من صلاحية الحساب في المسار المختار (المالك يدخل أي مسار)
-                if (activeSession.email.toLowerCase() !== SUPER_ADMIN_EMAIL.toLowerCase()) {
-                    const trackUser = state.users.find(u => u.email.toLowerCase() === activeSession.email.toLowerCase());
-                    if (!trackUser) {
-                        sessionStorage.removeItem('unified_activeSession');
-                        state.currentUser = null;
-                        document.getElementById('authSection').classList.remove('hidden');
-                        document.getElementById('dashboardSection').classList.add('hidden');
-                        document.getElementById('headerUserInfo').classList.add('hidden');
-                        return;
-                    }
-                    state.currentUser = { ...trackUser, isAdmin: trackUser.role === 'admin', isSuperAdmin: false };
-                } else {
-                    state.currentUser = activeSession;
-                }
-
+            if (activeSessionUser && activeSessionUser.email) {
+                state.currentUser = activeSessionUser;
                 document.getElementById('authSection').classList.add('hidden');
                 document.getElementById('dashboardSection').classList.remove('hidden');
                 document.getElementById('headerUserInfo').classList.remove('hidden');
@@ -751,7 +814,8 @@
 
             if (state.currentUser.isAdmin) {
                 state.groups.forEach((g, idx) => select.innerHTML += `<option value="group_${idx}">👥 جروب: ${g.name}</option>`);
-                state.users.filter(u => u.role === 'student').forEach(u => select.innerHTML += `<option value="${u.email}">👤 طالب: ${u.name}</option>`);
+                state.users.filter(u => u.role === 'student' && (u.allowedTracks || ['blocks']).includes(currentTrack))
+                    .forEach(u => select.innerHTML += `<option value="${u.email}">👤 طالب: ${u.name}</option>`);
                 if (select.options.length > 0 && !activeChatTarget) activeChatTarget = select.options[0].value;
             } else {
                 select.innerHTML = `<option value="${state.currentUser.email}">💬 محادثتي الخاصة مع المعلم</option>`;
@@ -1114,6 +1178,10 @@
             const st = state.users.find(u => u.email === email);
             if (!st) return;
             document.getElementById('editStudentEmail').value = email;
+            const tracks = st.allowedTracks || ['blocks'];
+            document.getElementById('editTrackBlocks').checked = tracks.includes('blocks');
+            document.getElementById('editTrackPython').checked = tracks.includes('python');
+
             document.getElementById('editStudentVideosList').innerHTML = state.videos.map(v => `<label class="checkbox-item"><input type="checkbox" value="${v.id}" class="edit-video-perm-check" ${(st.allowedVideos || []).includes(v.id) ? 'checked' : ''}><span>[${v.folder}] ${v.title}</span></label>`).join('');
             document.getElementById('editStudentModal').classList.remove('hidden');
         }
@@ -1123,6 +1191,14 @@
         function saveStudentPermissionsEdit() {
             const st = state.users.find(u => u.email === document.getElementById('editStudentEmail').value);
             if (st) {
+                const selectedTracks = [];
+                if (document.getElementById('editTrackBlocks').checked) selectedTracks.push('blocks');
+                if (document.getElementById('editTrackPython').checked) selectedTracks.push('python');
+                if (selectedTracks.length === 0) {
+                    alert('يجب اختيار مسار واحد على الأقل (Blocks أو Python)!');
+                    return;
+                }
+                st.allowedTracks = selectedTracks;
                 st.allowedVideos = Array.from(document.querySelectorAll('.edit-video-perm-check:checked')).map(c => c.value);
                 saveUsersData(); closeEditModal(); renderUsersTable();
             }
@@ -1130,7 +1206,8 @@
 
         function renderGroupsManagement() {
             const box = document.getElementById('groupStudentsCheckboxes');
-            if (box) box.innerHTML = state.users.filter(u => u.role === 'student').map(s => `<label class="checkbox-item"><input type="checkbox" value="${s.email}" class="group-student-box"><span>${s.name}</span></label>`).join('');
+            if (box) box.innerHTML = state.users.filter(u => u.role === 'student' && (u.allowedTracks || ['blocks']).includes(currentTrack))
+                .map(s => `<label class="checkbox-item"><input type="checkbox" value="${s.email}" class="group-student-box"><span>${s.name}</span></label>`).join('');
             const list = document.getElementById('groupsListContainer');
             if (list) list.innerHTML = state.groups.map((g, i) => `<div class="group-card-item"><div><strong>${g.name}</strong> (${g.students.length} طلاب)</div><button onclick="deleteGroup(${i})" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:4px;">حذف</button></div>`).join('');
         }
@@ -1145,6 +1222,15 @@
 
         function handleAddUser(e) {
             e.preventDefault();
+            const allowedTracks = [];
+            if (document.getElementById('allowTrackBlocks').checked) allowedTracks.push('blocks');
+            if (document.getElementById('allowTrackPython').checked) allowedTracks.push('python');
+
+            if (allowedTracks.length === 0) {
+                alert('يرجى تحديد مسار واحد على الأقل (Blocks أو Python) لهذا الإيميل!');
+                return;
+            }
+
             const role = document.getElementById('userRoleSelect').value;
             const user = {
                 id: Date.now().toString(),
@@ -1152,16 +1238,34 @@
                 email: document.getElementById('userEmailInput').value.trim(),
                 password: document.getElementById('userPasswordInput').value,
                 role,
+                allowedTracks,
                 permissions: role === 'admin' ? Array.from(document.querySelectorAll('.admin-perm-box:checked')).map(b => b.value) : [],
                 allowedVideos: role === 'student' ? Array.from(document.querySelectorAll('.video-perm-check:checked')).map(c => c.value) : []
             };
             state.users.push(user); saveUsersData(); renderUsersTable(); renderGroupsManagement(); initChatTargetsDropdown();
-            alert('تم إضافة المستخدم بنجاح!');
+            alert('تم إنشاء الحساب وتحديد مساراته بنجاح!');
         }
 
         function renderUsersTable() {
             const tbody = document.getElementById('usersTableBody');
-            if (tbody) tbody.innerHTML = state.users.map((u, i) => `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.role === 'admin' ? 'مشرف' : 'طالب'}</td><td>${u.role === 'student' ? `<button onclick="openEditStudentModal('${u.email}')" style="background:var(--primary-color); color:var(--btn-text); border:none; padding:4px 8px; border-radius:4px; margin-left:5px; font-weight:bold;">صلاحيات</button>` : ''}<button onclick="deleteUser(${i})" style="background:var(--danger); color:white; border:none; padding:4px 8px; border-radius:4px;">حذف</button></td></tr>`).join('');
+            if (!tbody) return;
+            tbody.innerHTML = state.users.map((u, i) => {
+                const tracks = u.allowedTracks || ['blocks'];
+                const trackBadges = tracks.map(t => t === 'python'
+                    ? `<span class="track-badge-pill" style="background:#3776ab; color:#ffd43b;">Python</span>`
+                    : `<span class="track-badge-pill" style="background:#f59e0b; color:#000;">Blocks</span>`
+                ).join('');
+                return `<tr>
+                    <td>${u.name}</td>
+                    <td>${u.email}</td>
+                    <td>${trackBadges}</td>
+                    <td>${u.role === 'admin' ? 'مشرف' : 'طالب'}</td>
+                    <td>
+                        <button onclick="openEditStudentModal('${u.email}')" style="background:var(--primary-color); color:var(--btn-text); border:none; padding:4px 8px; border-radius:4px; margin-left:5px; font-weight:bold; cursor:pointer;">المسارات والصلاحيات</button>
+                        <button onclick="deleteUser(${i})" style="background:var(--danger); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">حذف</button>
+                    </td>
+                </tr>`;
+            }).join('');
         }
 
         function deleteUser(idx) { state.users.splice(idx, 1); saveUsersData(); renderUsersTable(); }
