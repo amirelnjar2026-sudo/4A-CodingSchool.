@@ -3,18 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blocks</title>
+    <title>منصة البرمجة - Blocks & Python</title>
     
-    <link rel="icon" type="image/png" href="https://img.icons8.com/color/96/puzzle.png">
+    <link id="dynamicFavicon" rel="icon" type="image/png" href="https://img.icons8.com/color/96/code.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
+        /* الألوان الافتراضية + ثيم Blocks */
+        :root, body.theme-blocks {
             --bg-dark: #0f172a;
             --card-bg: #1e293b;
             --border-color: #334155;
-            --accent: #f59e0b;
-            --accent-hover: #d97706;
+            --primary-color: #f59e0b;
+            --primary-hover: #d97706;
+            --secondary-color: #fbbf24;
+            --btn-text: #000000;
+            --header-border: #334155;
+            --bubble-my-bg: #f59e0b;
+            --bubble-my-text: #000000;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --danger: #ef4444;
@@ -22,101 +28,154 @@
             --whatsapp: #25d366;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+        /* ثيم Python الأزرق والأصفر */
+        body.theme-python {
+            --bg-dark: #0b1120;
+            --card-bg: #151e32;
+            --border-color: #263554;
+            --primary-color: #ffd43b;
+            --primary-hover: #facc15;
+            --secondary-color: #38bdf8;
+            --btn-text: #0b1120;
+            --header-border: #3776ab;
+            --bubble-my-bg: linear-gradient(135deg, #3776ab, #2563eb);
+            --bubble-my-text: #ffffff;
+        }
 
-        header { background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .header-brand { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; transition: background-color 0.3s ease; }
+
+        /* الهيدر */
+        header { background-color: var(--card-bg); border-bottom: 2px solid var(--header-border); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .header-brand { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.55rem; font-weight: bold; color: var(--primary-color); }
+        
+        body.theme-python .logo span {
+            background: linear-gradient(90deg, #38bdf8, #ffd43b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-switch-track { background: rgba(255, 255, 255, 0.08); border: 1px solid var(--primary-color); color: var(--primary-color); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; font-weight: 600; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-switch-track:hover { background: var(--primary-color); color: var(--btn-text); }
+
         .support-badge { background-color: rgba(37, 211, 102, 0.15); border: 1px solid var(--whatsapp); color: #4ade80; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; transition: 0.2s; }
         .support-badge:hover { background-color: var(--whatsapp); color: #fff; }
 
+        /* شاشة اختيار المسار (Blocks أو Python) */
+        .track-selector-container { display: flex; flex-direction: column; justify-content: center; align-items: center; flex: 1; padding: 30px 20px; text-align: center; }
+        .track-cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; width: 100%; max-width: 720px; margin-top: 30px; }
+        .track-card { background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 16px; padding: 35px 25px; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .track-card.blocks-card:hover { border-color: #f59e0b; transform: translateY(-6px); box-shadow: 0 12px 30px rgba(245, 158, 11, 0.2); }
+        .track-card.python-card:hover { border-color: #ffd43b; transform: translateY(-6px); box-shadow: 0 12px 30px rgba(55, 118, 171, 0.35); }
+        .track-card-icon { width: 75px; height: 75px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.3rem; }
+
+        /* معلومات المستخدم وصندوق الرسائل */
         .user-info { display: flex; align-items: center; gap: 12px; position: relative; }
         .inbox-wrapper { position: relative; }
-        .inbox-btn { background: rgba(245, 158, 11, 0.15); border: 1px solid var(--accent); color: var(--accent); padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; position: relative; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .inbox-btn:hover { background: var(--accent); color: #000; }
+        .inbox-btn { background: rgba(255, 255, 255, 0.08); border: 1px solid var(--primary-color); color: var(--primary-color); padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; position: relative; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .inbox-btn:hover { background: var(--primary-color); color: var(--btn-text); }
         .inbox-badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid var(--card-bg); }
-        .inbox-dropdown { position: absolute; top: 45px; left: 0; width: 320px; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000; max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; }
-        .inbox-header { padding: 12px 15px; background: var(--bg-dark); border-bottom: 1px solid var(--border-color); font-weight: bold; font-size: 0.9rem; color: var(--accent); display: flex; justify-content: space-between; align-items: center; }
+        .inbox-dropdown { position: absolute; top: 45px; left: 0; width: 320px; background-color: var(--card-bg); border: 1px solid var(--primary-color); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000; max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; }
+        .inbox-header { padding: 12px 15px; background: var(--bg-dark); border-bottom: 1px solid var(--border-color); font-weight: bold; font-size: 0.9rem; color: var(--primary-color); display: flex; justify-content: space-between; align-items: center; }
         .inbox-item { padding: 12px 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
-        .inbox-item:hover { background-color: rgba(245, 158, 11, 0.08); }
+        .inbox-item:hover { background-color: rgba(255, 255, 255, 0.05); }
         .inbox-item-sender { font-size: 0.85rem; font-weight: bold; color: var(--text-main); display: flex; justify-content: space-between; margin-bottom: 4px; }
         .inbox-item-text { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .btn-edit-name { background: rgba(245, 158, 11, 0.15); color: var(--accent); border: 1px solid var(--accent); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+        .btn-edit-name { background: rgba(255, 255, 255, 0.08); color: var(--secondary-color); border: 1px solid var(--secondary-color); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
         .btn-logout { background-color: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; }
 
+        /* تسجيل الدخول */
         .auth-container { display: flex; justify-content: center; align-items: center; flex: 1; padding: 20px; }
-        .auth-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .auth-card h2 { text-align: center; margin-bottom: 25px; color: var(--accent); }
+        .auth-card { background-color: var(--card-bg); border: 2px solid var(--header-border); border-radius: 12px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+        .auth-card h2 { text-align: center; margin-bottom: 25px; color: var(--primary-color); }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; }
         .form-group input, .form-group select { width: 100%; padding: 12px; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 6px; color: white; font-size: 1rem; }
-        .btn-primary { width: 100%; background-color: var(--accent); color: #000; border: none; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; }
-        .btn-primary:hover { background-color: var(--accent-hover); color: white; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-color); }
+        
+        .btn-primary { width: 100%; background-color: var(--primary-color); color: var(--btn-text); border: none; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
+        /* لوحة التحكم */
         .dashboard { display: flex; flex: 1; }
         .sidebar { width: 260px; background-color: var(--card-bg); border-left: 1px solid var(--border-color); padding: 20px 0; }
         .sidebar-menu { list-style: none; }
         .sidebar-menu li { padding: 15px 25px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-        .sidebar-menu li:hover, .sidebar-menu li.active { background-color: rgba(245, 158, 11, 0.1); color: var(--accent); border-right: 4px solid var(--accent); }
+        .sidebar-menu li:hover, .sidebar-menu li.active { background-color: rgba(255, 255, 255, 0.06); color: var(--primary-color); border-right: 4px solid var(--primary-color); font-weight: 600; }
 
         .content { flex: 1; padding: 30px; overflow-y: auto; }
+        .content h2 { color: var(--secondary-color); }
+        .content h2 i { color: var(--primary-color); }
+
+        /* شريط المجلدات */
         .folder-filter-bar { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; align-items: center; }
-        .folder-chip-wrapper { display: inline-flex; align-items: center; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; }
-        .folder-chip { color: var(--text-muted); padding: 8px 16px; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
-        .folder-chip.active, .folder-chip:hover { background-color: var(--accent); color: #000; font-weight: bold; }
+        .folder-chip-wrapper { display: inline-flex; align-items: center; background-color: var(--card-bg); border: 1px solid var(--header-border); border-radius: 20px; overflow: hidden; }
+        .folder-chip { color: var(--text-main); padding: 8px 16px; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+        .folder-chip.active, .folder-chip:hover { background-color: var(--primary-color); color: var(--btn-text); font-weight: bold; }
         .btn-delete-folder { background: var(--danger); color: white; border: none; padding: 8px 12px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
         .btn-delete-folder:hover { background: #dc2626; }
 
-        .folder-drop-box { border: 2px dashed var(--accent); background: rgba(245, 158, 11, 0.05); border-radius: 10px; padding: 25px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .folder-drop-box:hover { background: rgba(245, 158, 11, 0.12); }
+        /* مربع رفع الفولدر */
+        .folder-drop-box { border: 2px dashed var(--primary-color); background: rgba(255, 255, 255, 0.03); border-radius: 10px; padding: 25px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .folder-drop-box:hover { background: rgba(255, 255, 255, 0.08); }
 
+        /* بطاقات الفيديوهات */
         .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .video-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+        .video-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-top: 3px solid var(--primary-color); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
         .video-player-container { width: 100%; height: 180px; background-color: #000; display: flex; align-items: center; justify-content: center; }
         .video-player-container video { width: 100%; height: 100%; border: none; }
         .video-info { padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .video-title { font-size: 1.1rem; margin-bottom: 5px; }
-        .video-folder-tag { font-size: 0.75rem; color: var(--accent); background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
+        .video-folder-tag { font-size: 0.75rem; color: var(--primary-color); background: rgba(255, 255, 255, 0.07); border: 1px solid var(--border-color); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
         .status-watched-badge { display: inline-block; background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; margin-top: 10px; }
 
         .attached-files-box { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; margin-top: 10px; }
-        .file-link-item { display: inline-flex; align-items: center; gap: 6px; background: rgba(245, 158, 11, 0.1); border: 1px solid var(--accent); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; text-decoration: none; margin: 4px 0; transition: 0.2s; font-weight: 500; }
-        .file-link-item:hover { background: var(--accent); color: #000; }
-        .lesson-img-preview { max-width: 80px; max-height: 60px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border-color); cursor: pointer; }
+        .file-link-item { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.07); border: 1px solid var(--primary-color); color: var(--primary-color); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; text-decoration: none; margin: 4px 0; transition: 0.2s; font-weight: 500; }
+        .file-link-item:hover { background: var(--primary-color); color: var(--btn-text); }
+        .lesson-img-preview { max-width: 80px; max-height: 60px; border-radius: 4px; object-fit: cover; border: 1px solid var(--primary-color); cursor: pointer; }
 
-        .chat-container { display: flex; flex-direction: column; height: 70vh; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; }
+        /* المحادثات */
+        .chat-container { display: flex; flex-direction: column; height: 70vh; background: var(--card-bg); border: 1px solid var(--header-border); border-radius: 10px; overflow: hidden; }
         .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
         .chat-bubble { max-width: 75%; padding: 12px 16px; border-radius: 10px; font-size: 0.95rem; line-height: 1.4; cursor: pointer; }
-        .chat-bubble.my-msg { background-color: var(--accent); color: #000; align-self: flex-end; border-top-left-radius: 0; font-weight: 500; }
-        .chat-bubble.other-msg { background-color: #334155; color: var(--text-main); align-self: flex-start; border-top-right-radius: 0; }
-        .chat-sender { font-size: 0.75rem; margin-bottom: 4px; color: #cbd5e1; display: block; }
+        .chat-bubble.my-msg { background: var(--bubble-my-bg); color: var(--bubble-my-text); border: 1px solid var(--primary-color); align-self: flex-end; border-top-left-radius: 0; font-weight: 500; }
+        .chat-bubble.other-msg { background-color: #24324d; color: var(--text-main); align-self: flex-start; border-top-right-radius: 0; }
+        .chat-sender { font-size: 0.75rem; margin-bottom: 4px; color: var(--primary-color); display: block; }
+        body.theme-blocks .chat-bubble.my-msg .chat-sender { color: #1e293b; font-weight: bold; }
         .chat-input-area { display: flex; padding: 15px; background-color: var(--bg-dark); border-top: 1px solid var(--border-color); gap: 10px; align-items: center; }
         .chat-input-area input[type="text"] { flex: 1; padding: 10px 15px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; color: white; }
-        .chat-file-btn { background: rgba(245, 158, 11, 0.15); border: 1px solid var(--accent); color: var(--accent); padding: 10px 14px; border-radius: 6px; cursor: pointer; font-size: 1rem; }
-        .chat-input-area button.send-btn { background-color: var(--accent); color: #000; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .chat-file-btn { background: rgba(255, 255, 255, 0.08); border: 1px solid var(--primary-color); color: var(--primary-color); padding: 10px 14px; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+        .chat-input-area button.send-btn { background-color: var(--primary-color); color: var(--btn-text); border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .chat-media-preview { max-width: 200px; max-height: 150px; border-radius: 6px; margin-top: 5px; display: block; }
-        .chat-file-download-card { display: inline-flex; align-items: center; gap: 8px; background: rgba(245, 158, 11, 0.15); border: 1px solid var(--accent); color: var(--text-main); padding: 8px 14px; border-radius: 6px; text-decoration: none; margin-top: 5px; font-weight: 600; font-size: 0.9rem; }
+        .chat-file-download-card { display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--primary-color); color: var(--primary-color); padding: 8px 14px; border-radius: 6px; text-decoration: none; margin-top: 5px; font-weight: 600; font-size: 0.9rem; }
 
-        .group-card-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        /* الجداول والقوائم */
+        .group-card-item { background: var(--card-bg); border: 1px solid var(--header-border); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .data-table { width: 100%; border-collapse: collapse; background-color: var(--card-bg); border-radius: 8px; overflow: hidden; margin-top: 20px; }
         .data-table th, .data-table td { padding: 12px 15px; text-align: right; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
-        .data-table th { background-color: rgba(255,255,255,0.05); color: var(--accent); }
+        .data-table th { background-color: rgba(255,255,255,0.06); color: var(--primary-color); }
         .checkbox-group { display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto; background: var(--bg-dark); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); }
         .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
-        .checkbox-item input { width: auto; }
+        .checkbox-item input { width: auto; accent-color: var(--primary-color); }
         .hidden { display: none !important; }
     </style>
 </head>
-<body>
+<body class="theme-blocks">
 
+    <!-- الهيدر -->
     <header>
         <div class="header-brand">
-            <div class="logo">
-                <i class="fa-solid fa-cubes"></i> Blocks
+            <div class="logo" id="headerLogo">
+                <i class="fa-solid fa-code"></i> <span>أكاديمية البرمجة</span>
             </div>
+
+            <button id="switchTrackBtn" class="btn-switch-track hidden" onclick="returnToTrackSelection()" title="تبديل المسار التعليمي">
+                <i class="fa-solid fa-repeat"></i> <span>تغيير الكورس</span>
+            </button>
+
             <a href="https://wa.me/201021205814" target="_blank" class="support-badge">
                 <i class="fa-brands fa-whatsapp" style="font-size: 1.1rem;"></i> <span>دعم واتساب: 01021205814</span>
             </a>
@@ -131,21 +190,47 @@
                 <div class="inbox-dropdown hidden" id="inboxDropdownList">
                     <div class="inbox-header">
                         <span><i class="fa-solid fa-inbox"></i> صندوق البريد والرسائل</span>
-                        <small id="inboxCountSubtitle" style="color:var(--text-muted); font-size:0.75rem;"></small>
                     </div>
                     <div id="inboxMessagesContainer"></div>
                 </div>
             </div>
 
-            <span id="userNameDisplay"></span>
+            <span id="userNameDisplay" style="color: var(--primary-color); font-weight: 600;"></span>
             <button class="btn-edit-name" onclick="promptChangeName()"><i class="fa-solid fa-pen"></i> تغيير الاسم</button>
             <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
         </div>
     </header>
 
-    <div class="auth-container" id="authSection">
+    <!-- 1. شاشة اختيار المسار (Blocks أو Python) -->
+    <div class="track-selector-container" id="trackSelectionSection">
+        <h1 style="font-size: 2rem; margin-bottom: 10px;">اختر المسار التعليمي للدخول</h1>
+        <p style="color: var(--text-muted);">حدد الكورس الخاص بك للانتقال إلى الفيديوهات والجروبات</p>
+
+        <div class="track-cards-grid">
+            <div class="track-card blocks-card" onclick="selectTrack('blocks')">
+                <div class="track-card-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 2px solid #f59e0b;">
+                    <i class="fa-solid fa-cubes"></i>
+                </div>
+                <h2 style="color: #f59e0b; font-size: 1.6rem;">مسار Blocks</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">البرمجة بالبلوكس وبناء الألعاب والتطبيقات التفاعلية</p>
+                <span style="background: #f59e0b; color: #000; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; margin-top: 5px;">دخول مسار Blocks</span>
+            </div>
+
+            <div class="track-card python-card" onclick="selectTrack('python')">
+                <div class="track-card-icon" style="background: rgba(55, 118, 171, 0.25); color: #ffd43b; border: 2px solid #38bdf8;">
+                    <i class="fa-brands fa-python"></i>
+                </div>
+                <h2 style="background: linear-gradient(90deg, #38bdf8, #ffd43b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.6rem;">مسار Python</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">أساسيات البرمجة النصية بلغة بايثون وبناء المشاريع</p>
+                <span style="background: linear-gradient(135deg, #3776ab, #2563eb); color: #ffd43b; border: 1px solid #ffd43b; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; margin-top: 5px;">دخول مسار Python</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. شاشة تسجيل الدخول -->
+    <div class="auth-container hidden" id="authSection">
         <div class="auth-card">
-            <h2>تسجيل الدخول - Blocks</h2>
+            <h2 id="loginTitle">تسجيل الدخول</h2>
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label>البريد الإلكتروني</label>
@@ -160,6 +245,7 @@
         </div>
     </div>
 
+    <!-- 3. لوحة التحكم -->
     <div class="dashboard hidden" id="dashboardSection">
         <div class="sidebar">
             <ul class="sidebar-menu">
@@ -188,20 +274,22 @@
         </div>
 
         <div class="content">
+            <!-- تبويب الدروس -->
             <div id="tabVideos">
-                <h2><i class="fa-solid fa-cubes"></i> مكتبة دروس Blocks</h2>
-                <p id="ownerDeleteHint" class="hidden" style="color: var(--accent); font-size: 0.85rem; margin: 8px 0 15px 0;">
+                <h2 id="libraryHeading"><i class="fa-solid fa-play-circle"></i> مكتبة الدروس</h2>
+                <p id="ownerDeleteHint" class="hidden" style="color: var(--primary-color); font-size: 0.85rem; margin: 8px 0 15px 0;">
                     <i class="fa-solid fa-shield-halved"></i> صلاحيات المالك: يمكنك حذف مجلد سيشن كامل بالضغط على علامة السلة بجانب اسم المجلد، أو حذف فيديو واحد من أسفله.
                 </p>
                 <div class="folder-filter-bar" id="folderFilterBar"></div>
                 <div class="video-grid" id="videoList"></div>
             </div>
 
+            <!-- تبويب المحادثات -->
             <div id="tabChat" class="hidden">
                 <h2><i class="fa-solid fa-comments"></i> المحادثات والجروبات المشتركة</h2>
                 <div style="margin-bottom: 15px;">
                     <label style="color:var(--text-muted); font-size:0.9rem; display:block; margin-bottom:5px;">اختر المحادثة أو الجروب:</label>
-                    <select id="chatTargetSelect" onchange="changeActiveChatTarget()" style="min-width: 250px; padding: 10px; background:var(--card-bg); color:white; border:1px solid var(--border-color); border-radius:6px;"></select>
+                    <select id="chatTargetSelect" onchange="changeActiveChatTarget()" style="min-width: 250px; padding: 10px; background:var(--card-bg); color:white; border:1px solid var(--header-border); border-radius:6px;"></select>
                 </div>
 
                 <div class="chat-container">
@@ -215,21 +303,22 @@
                 </div>
             </div>
 
+            <!-- تبويب رفع Folder السيشن بالكامل -->
             <div id="tabAddVideo" class="hidden">
                 <h2><i class="fa-solid fa-folder-open"></i> رفع Folder السيشن بالكامل من الجهاز</h2>
-                <div style="max-width: 600px; margin-top: 20px; background:var(--card-bg); padding:25px; border-radius:8px; border:1px solid var(--border-color);">
+                <div style="max-width: 600px; margin-top: 20px; background:var(--card-bg); padding:25px; border-radius:8px; border:1px solid var(--header-border);">
                     <form onsubmit="handleAddFolderForm(event)">
                         <div class="form-group">
                             <div class="folder-drop-box" onclick="document.getElementById('sessionFolderUpload').click()">
-                                <i class="fa-solid fa-folder-tree" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 10px;"></i>
-                                <p style="font-weight: bold; margin-bottom: 5px;">اضغط هنا لاختيار مجلد (Folder) السيشن بالكامل</p>
+                                <i class="fa-solid fa-folder-tree" style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px;"></i>
+                                <p style="font-weight: bold; margin-bottom: 5px; color: var(--secondary-color);">اضغط هنا لاختيار مجلد (Folder) السيشن بالكامل</p>
                                 <small style="color: var(--text-muted);">سيتم أخذ اسم المجلد تلقائياً ورفع كل الفيديوهات التي بداخله دفعة واحدة</small>
                                 <input type="file" id="sessionFolderUpload" webkitdirectory directory multiple accept="video/*" class="hidden" onchange="previewSelectedFolder(this)">
                             </div>
                         </div>
 
-                        <div id="selectedFolderPreview" class="hidden" style="background: var(--bg-dark); padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 20px;">
-                            <div style="color: var(--accent); font-weight: bold; margin-bottom: 8px;" id="previewFolderName"></div>
+                        <div id="selectedFolderPreview" class="hidden" style="background: var(--bg-dark); padding: 15px; border-radius: 6px; border: 1px solid var(--header-border); margin-bottom: 20px;">
+                            <div style="color: var(--primary-color); font-weight: bold; margin-bottom: 8px;" id="previewFolderName"></div>
                             <ul id="previewVideosList" style="list-style: none; font-size: 0.85rem; color: var(--text-muted); max-height: 150px; overflow-y: auto;"></ul>
                         </div>
 
@@ -238,9 +327,10 @@
                 </div>
             </div>
 
+            <!-- تبويب الملحقات -->
             <div id="tabAddAttachments" class="hidden">
                 <h2><i class="fa-solid fa-file-circle-plus"></i> إضافة ملحقات (PowerPoint & صور)</h2>
-                <div style="max-width: 600px; margin-top: 20px; background:var(--card-bg); padding:20px; border-radius:8px; border:1px solid var(--border-color);">
+                <div style="max-width: 600px; margin-top: 20px; background:var(--card-bg); padding:20px; border-radius:8px; border:1px solid var(--header-border);">
                     <form onsubmit="handleSaveAttachments(event)">
                         <div class="form-group">
                             <label>اختر الفيديو:</label>
@@ -259,8 +349,9 @@
                 </div>
             </div>
 
+            <!-- تبويب الإشعارات -->
             <div id="tabCompletions" class="hidden">
-                <h2><i class="fa-solid fa-trophy"></i> إشعارات إنهاء كورس Blocks</h2>
+                <h2><i class="fa-solid fa-trophy"></i> إشعارات إنهاء الكورس</h2>
                 <table class="data-table">
                     <thead>
                         <tr><th>اسم الطالب</th><th>البريد الإلكتروني</th><th>الكورس المنتهي</th><th>وقت الاكمال</th></tr>
@@ -269,13 +360,14 @@
                 </table>
             </div>
 
+            <!-- تبويب الجروبات -->
             <div id="tabGroups" class="hidden">
                 <h2><i class="fa-solid fa-layer-group"></i> إدارة الجروبات</h2>
-                <div style="max-width: 600px; margin-top: 20px; background:var(--card-bg); padding:20px; border-radius:8px; border:1px solid var(--border-color);">
+                <div style="max-width: 600px; margin-top: 20px; background:var(--card-bg); padding:20px; border-radius:8px; border:1px solid var(--header-border);">
                     <form onsubmit="handleCreateGroup(event)">
                         <div class="form-group">
                             <label>اسم الجروب</label>
-                            <input type="text" id="groupNameInput" required placeholder="مثال: جروب Blocks الصباحي">
+                            <input type="text" id="groupNameInput" required placeholder="مثال: جروب الصباحي">
                         </div>
                         <div class="form-group">
                             <label>اختر الطلاب:</label>
@@ -287,6 +379,7 @@
                 <div id="groupsListContainer" style="margin-top: 20px;"></div>
             </div>
 
+            <!-- تبويب المستخدمين -->
             <div id="tabStudents" class="hidden">
                 <h2><i class="fa-solid fa-user-plus"></i> إضافة مستخدم جديد</h2>
                 <div style="max-width: 600px; margin-top: 20px;">
@@ -327,9 +420,10 @@
         </div>
     </div>
 
+    <!-- نافذة تعديل صلاحيات الطالب -->
     <div id="editStudentModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center; z-index:9999;">
-        <div style="background:var(--card-bg); padding:30px; border-radius:12px; border:1px solid var(--border-color); width:90%; max-width:500px;">
-            <h3 id="editModalTitle" style="color:var(--accent); margin-bottom:15px;">تعديل الفيديوهات المسموحة</h3>
+        <div style="background:var(--card-bg); padding:30px; border-radius:12px; border:2px solid var(--primary-color); width:90%; max-width:500px;">
+            <h3 id="editModalTitle" style="color:var(--primary-color); margin-bottom:15px;">تعديل الفيديوهات المسموحة</h3>
             <input type="hidden" id="editStudentEmail">
             <div class="checkbox-group" id="editStudentVideosList" style="max-height:250px; margin-bottom:20px;"></div>
             <div style="display:flex; gap:10px;">
@@ -345,6 +439,7 @@
         const OWNER_EXACT_NAME = "Amir Mohamed(Onwer)";
 
         let db;
+        let currentTrack = localStorage.getItem('selected_coding_track') || null; // 'blocks' أو 'python'
         let currentFolderFilter = null;
         let activeChatTarget = null;
         let activeObjectURLs = [];
@@ -353,15 +448,16 @@
 
         let state = {
             currentUser: null,
-            users: JSON.parse(localStorage.getItem('blocks_users')) || [],
-            videos: JSON.parse(localStorage.getItem('blocks_videos')) || [],
+            users: [],
+            videos: [],
             messages: [],
             completions: [],
-            groups: JSON.parse(localStorage.getItem('blocks_groups')) || [],
-            watchedVideos: JSON.parse(localStorage.getItem('blocks_watched')) || {}
+            groups: [],
+            watchedVideos: {}
         };
 
-        const request = indexedDB.open("BlocksPlatformDB_V2", 2);
+        // فتح قاعدة بيانات موحدة تدعم تخزين ملفات الفيديو الضخمة
+        const request = indexedDB.open("UnifiedCodingAcademyDB_V1", 1);
         request.onupgradeneeded = function(e) {
             db = e.target.result;
             if (!db.objectStoreNames.contains("messages")) db.createObjectStore("messages", { keyPath: "id" });
@@ -370,19 +466,73 @@
         };
         request.onsuccess = function(e) {
             db = e.target.result;
-            loadMessagesFromDB();
-            loadCompletionsFromDB();
-            renderVideos();
+            bootPlatform();
         };
+
+        // اختيار المسار (Blocks أو Python) وتطبيق الثيم الخاص به
+        function selectTrack(track) {
+            currentTrack = track;
+            localStorage.setItem('selected_coding_track', track);
+            currentFolderFilter = null;
+            activeChatTarget = null;
+            applyTrackTheme(track);
+            loadTrackState(track);
+            bootPlatform();
+        }
+
+        function returnToTrackSelection() {
+            currentTrack = null;
+            localStorage.removeItem('selected_coding_track');
+            document.body.className = 'theme-blocks';
+            document.title = 'منصة البرمجة - Blocks & Python';
+            document.getElementById('dynamicFavicon').href = 'https://img.icons8.com/color/96/code.png';
+            document.getElementById('headerLogo').innerHTML = '<i class="fa-solid fa-code"></i> <span>أكاديمية البرمجة</span>';
+            document.getElementById('switchTrackBtn').classList.add('hidden');
+            document.getElementById('headerUserInfo').classList.add('hidden');
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.add('hidden');
+            document.getElementById('trackSelectionSection').classList.remove('hidden');
+        }
+
+        function applyTrackTheme(track) {
+            const logo = document.getElementById('headerLogo');
+            const favicon = document.getElementById('dynamicFavicon');
+            const loginTitle = document.getElementById('loginTitle');
+            const libHeading = document.getElementById('libraryHeading');
+
+            if (track === 'python') {
+                document.body.className = 'theme-python';
+                document.title = 'Python';
+                favicon.href = 'https://img.icons8.com/color/96/python--v1.png';
+                logo.innerHTML = '<i class="fa-brands fa-python"></i> <span>Python</span>';
+                loginTitle.innerHTML = '<i class="fa-brands fa-python" style="color:#38bdf8;"></i> تسجيل الدخول - Python';
+                libHeading.innerHTML = '<i class="fa-brands fa-python"></i> مكتبة دروس Python';
+            } else {
+                document.body.className = 'theme-blocks';
+                document.title = 'Blocks';
+                favicon.href = 'https://img.icons8.com/color/96/puzzle.png';
+                logo.innerHTML = '<i class="fa-solid fa-cubes"></i> <span>Blocks</span>';
+                loginTitle.innerHTML = '<i class="fa-solid fa-cubes"></i> تسجيل الدخول - Blocks';
+                libHeading.innerHTML = '<i class="fa-solid fa-cubes"></i> مكتبة دروس Blocks';
+            }
+            document.getElementById('switchTrackBtn').classList.remove('hidden');
+        }
+
+        function loadTrackState(track) {
+            state.users = JSON.parse(localStorage.getItem(`${track}_users`)) || [];
+            state.videos = JSON.parse(localStorage.getItem(`${track}_videos`)) || [];
+            state.groups = JSON.parse(localStorage.getItem(`${track}_groups`)) || [];
+            state.watchedVideos = JSON.parse(localStorage.getItem(`${track}_watched`)) || {};
+        }
 
         function isOwnerUser() {
             return state.currentUser && state.currentUser.name === OWNER_EXACT_NAME;
         }
 
-        function saveVideosMeta() { localStorage.setItem('blocks_videos', JSON.stringify(state.videos)); }
-        function saveUsersData() { localStorage.setItem('blocks_users', JSON.stringify(state.users)); }
-        function saveGroupsData() { localStorage.setItem('blocks_groups', JSON.stringify(state.groups)); }
-        function saveSessionData() { sessionStorage.setItem('blocks_activeSession', JSON.stringify(state.currentUser)); }
+        function saveVideosMeta() { localStorage.setItem(`${currentTrack}_videos`, JSON.stringify(state.videos)); }
+        function saveUsersData() { localStorage.setItem(`${currentTrack}_users`, JSON.stringify(state.users)); }
+        function saveGroupsData() { localStorage.setItem(`${currentTrack}_groups`, JSON.stringify(state.groups)); }
+        function saveSessionData() { sessionStorage.setItem('unified_activeSession', JSON.stringify(state.currentUser)); }
 
         function saveMultipleVideoFilesToDB(items, callback) {
             if (!db || items.length === 0) return callback();
@@ -411,6 +561,7 @@
 
         function saveMessageToDB(msgObj) {
             if (!db) return;
+            msgObj.track = currentTrack;
             const tx = db.transaction("messages", "readwrite");
             tx.objectStore("messages").put(msgObj);
             tx.oncomplete = () => loadMessagesFromDB();
@@ -424,27 +575,22 @@
         }
 
         function loadMessagesFromDB() {
-            if (!db) return;
+            if (!db || !currentTrack) return;
             const tx = db.transaction("messages", "readonly");
             tx.objectStore("messages").getAll().onsuccess = function(e) {
-                state.messages = e.target.result || [];
+                const allMsgs = e.target.result || [];
+                state.messages = allMsgs.filter(m => m.track === currentTrack);
                 renderChatMessages();
                 renderInboxMessages();
             };
         }
 
-        function saveCompletionToDB(compObj) {
-            if (!db) return;
-            const tx = db.transaction("completions", "readwrite");
-            tx.objectStore("completions").put(compObj);
-            tx.oncomplete = () => loadCompletionsFromDB();
-        }
-
         function loadCompletionsFromDB() {
-            if (!db) return;
+            if (!db || !currentTrack) return;
             const tx = db.transaction("completions", "readonly");
             tx.objectStore("completions").getAll().onsuccess = function(e) {
-                state.completions = e.target.result || [];
+                const allComps = e.target.result || [];
+                state.completions = allComps.filter(c => c.track === currentTrack);
                 renderCompletionsTable();
             };
         }
@@ -463,7 +609,7 @@
                     permissions: ['videos', 'addAttachments', 'chat', 'students', 'completions', 'groups']
                 };
                 saveSessionData();
-                initApp();
+                bootPlatform();
                 return;
             }
 
@@ -471,9 +617,9 @@
             if (user) {
                 state.currentUser = { ...user, isAdmin: user.role === 'admin', isSuperAdmin: false };
                 saveSessionData();
-                initApp();
+                bootPlatform();
             } else {
-                alert('خطأ في البريد الإلكتروني أو كلمة المرور!');
+                alert('خطأ في البريد الإلكتروني أو كلمة المرور في هذا المسار!');
             }
         }
 
@@ -495,14 +641,38 @@
 
         function logout() {
             state.currentUser = null;
-            sessionStorage.removeItem('blocks_activeSession');
-            initApp();
+            sessionStorage.removeItem('unified_activeSession');
+            bootPlatform();
         }
 
-        function initApp() {
-            const activeSession = JSON.parse(sessionStorage.getItem('blocks_activeSession'));
+        function bootPlatform() {
+            if (!currentTrack) {
+                returnToTrackSelection();
+                return;
+            }
+
+            applyTrackTheme(currentTrack);
+            loadTrackState(currentTrack);
+            document.getElementById('trackSelectionSection').classList.add('hidden');
+
+            const activeSession = JSON.parse(sessionStorage.getItem('unified_activeSession'));
             if (activeSession && activeSession.email) {
-                state.currentUser = activeSession;
+                // التحقق من صلاحية الحساب في المسار المختار (المالك يدخل أي مسار)
+                if (activeSession.email.toLowerCase() !== SUPER_ADMIN_EMAIL.toLowerCase()) {
+                    const trackUser = state.users.find(u => u.email.toLowerCase() === activeSession.email.toLowerCase());
+                    if (!trackUser) {
+                        sessionStorage.removeItem('unified_activeSession');
+                        state.currentUser = null;
+                        document.getElementById('authSection').classList.remove('hidden');
+                        document.getElementById('dashboardSection').classList.add('hidden');
+                        document.getElementById('headerUserInfo').classList.add('hidden');
+                        return;
+                    }
+                    state.currentUser = { ...trackUser, isAdmin: trackUser.role === 'admin', isSuperAdmin: false };
+                } else {
+                    state.currentUser = activeSession;
+                }
+
                 document.getElementById('authSection').classList.add('hidden');
                 document.getElementById('dashboardSection').classList.remove('hidden');
                 document.getElementById('headerUserInfo').classList.remove('hidden');
@@ -702,10 +872,8 @@
                 return;
             }
 
-            // ترتيب الفيديوهات أبجدياً / رقمياً
             videoFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
 
-            // استخراج اسم المجلد الرئيسي تلقائياً من مسار الملف
             const firstPath = videoFiles[0].webkitRelativePath || "";
             pendingFolderName = firstPath.includes('/') ? firstPath.split('/')[0] : "Session Folder";
             pendingFolderVideos = videoFiles;
@@ -730,7 +898,7 @@
             btn.textContent = `جاري رفع وحفظ ${pendingFolderVideos.length} فيديوهات...`;
 
             const preparedItems = pendingFolderVideos.map((file, idx) => {
-                const videoId = Date.now().toString() + "_" + idx + "_" + Math.random().toString(36).substr(2, 5);
+                const videoId = `${currentTrack}_` + Date.now().toString() + "_" + idx + "_" + Math.random().toString(36).substr(2, 5);
                 const cleanTitle = file.name.replace(/\.[^/.]+$/, "");
                 return {
                     id: videoId,
@@ -866,7 +1034,7 @@
             if (currentFolderFilter) list = list.filter(v => v.folder === currentFolderFilter);
 
             const ownerCanDelete = isOwnerUser();
-            container.innerHTML = list.length === 0 ? '<p style="color:var(--text-muted);">لا توجد فيديوهات حالياً.</p>' : '';
+            container.innerHTML = list.length === 0 ? '<p style="color:var(--text-muted);">لا توجد فيديوهات حالياً في هذا المسار.</p>' : '';
 
             list.forEach(v => {
                 const isWatched = !state.currentUser.isAdmin && (state.watchedVideos[state.currentUser.email] || []).includes(v.id);
@@ -916,11 +1084,11 @@
             state.watchedVideos[email] = state.watchedVideos[email] || [];
             if (!state.watchedVideos[email].includes(videoId)) {
                 state.watchedVideos[email].push(videoId);
-                localStorage.setItem('blocks_watched', JSON.stringify(state.watchedVideos));
+                localStorage.setItem(`${currentTrack}_watched`, JSON.stringify(state.watchedVideos));
                 renderVideos();
                 const allowed = state.currentUser.allowedVideos || [];
                 if (allowed.length > 0 && allowed.every(id => state.watchedVideos[email].includes(id))) {
-                    const trigId = `hw_${email}`;
+                    const trigId = `hw_${currentTrack}_${email}`;
                     if (!state.messages.some(m => m.id === trigId)) {
                         saveMessageToDB({
                             id: trigId, targetKey: email, senderEmail: SUPER_ADMIN_EMAIL, senderName: OWNER_EXACT_NAME,
@@ -988,17 +1156,15 @@
                 allowedVideos: role === 'student' ? Array.from(document.querySelectorAll('.video-perm-check:checked')).map(c => c.value) : []
             };
             state.users.push(user); saveUsersData(); renderUsersTable(); renderGroupsManagement(); initChatTargetsDropdown();
-            alert('تم إضافة المستخدم!');
+            alert('تم إضافة المستخدم بنجاح!');
         }
 
         function renderUsersTable() {
             const tbody = document.getElementById('usersTableBody');
-            if (tbody) tbody.innerHTML = state.users.map((u, i) => `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.role === 'admin' ? 'مشرف' : 'طالب'}</td><td>${u.role === 'student' ? `<button onclick="openEditStudentModal('${u.email}')" style="background:var(--accent); border:none; padding:4px 8px; border-radius:4px; margin-left:5px;">صلاحيات</button>` : ''}<button onclick="deleteUser(${i})" style="background:var(--danger); color:white; border:none; padding:4px 8px; border-radius:4px;">حذف</button></td></tr>`).join('');
+            if (tbody) tbody.innerHTML = state.users.map((u, i) => `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.role === 'admin' ? 'مشرف' : 'طالب'}</td><td>${u.role === 'student' ? `<button onclick="openEditStudentModal('${u.email}')" style="background:var(--primary-color); color:var(--btn-text); border:none; padding:4px 8px; border-radius:4px; margin-left:5px; font-weight:bold;">صلاحيات</button>` : ''}<button onclick="deleteUser(${i})" style="background:var(--danger); color:white; border:none; padding:4px 8px; border-radius:4px;">حذف</button></td></tr>`).join('');
         }
 
         function deleteUser(idx) { state.users.splice(idx, 1); saveUsersData(); renderUsersTable(); }
-
-        initApp();
     </script>
 </body>
 </html>
