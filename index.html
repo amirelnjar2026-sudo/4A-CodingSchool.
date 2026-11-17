@@ -70,6 +70,9 @@
         .btn-delete-folder { background: var(--danger); color: white; border: none; padding: 8px 12px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
         .btn-delete-folder:hover { background: #dc2626; }
 
+        .folder-drop-box { border: 2px dashed var(--accent); background: rgba(245, 158, 11, 0.05); border-radius: 10px; padding: 25px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .folder-drop-box:hover { background: rgba(245, 158, 11, 0.12); }
+
         .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .video-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
         .video-player-container { width: 100%; height: 180px; background-color: #000; display: flex; align-items: center; justify-content: center; }
@@ -167,7 +170,7 @@
                     <i class="fa-solid fa-comments"></i> <span>المحادثات والجروبات</span>
                 </li>
                 <li id="menuAddVideo" class="admin-only hidden" onclick="switchTab('addVideo')">
-                    <i class="fa-solid fa-folder-plus"></i> <span>إضافة سيشن جديد</span>
+                    <i class="fa-solid fa-folder-plus"></i> <span>رفع Folder سيشن كامل</span>
                 </li>
                 <li id="menuAddAttachments" class="admin-only hidden" onclick="switchTab('addAttachments')">
                     <i class="fa-solid fa-paperclip"></i> <span>إضافة ملحقات للسيشنات</span>
@@ -213,22 +216,24 @@
             </div>
 
             <div id="tabAddVideo" class="hidden">
-                <h2><i class="fa-solid fa-cloud-arrow-up"></i> رفع سيشن جديد من الجهاز</h2>
-                <div style="max-width: 600px; margin-top: 20px; background:var(--card-bg); padding:20px; border-radius:8px; border:1px solid var(--border-color);">
-                    <form onsubmit="handleAddVideoForm(event)">
+                <h2><i class="fa-solid fa-folder-open"></i> رفع Folder السيشن بالكامل من الجهاز</h2>
+                <div style="max-width: 600px; margin-top: 20px; background:var(--card-bg); padding:25px; border-radius:8px; border:1px solid var(--border-color);">
+                    <form onsubmit="handleAddFolderForm(event)">
                         <div class="form-group">
-                            <label>اسم ملف السيشن / المجلد (مثال: Session 1)</label>
-                            <input type="text" id="videoFolder" required placeholder="مثال: Session 1">
+                            <div class="folder-drop-box" onclick="document.getElementById('sessionFolderUpload').click()">
+                                <i class="fa-solid fa-folder-tree" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 10px;"></i>
+                                <p style="font-weight: bold; margin-bottom: 5px;">اضغط هنا لاختيار مجلد (Folder) السيشن بالكامل</p>
+                                <small style="color: var(--text-muted);">سيتم أخذ اسم المجلد تلقائياً ورفع كل الفيديوهات التي بداخله دفعة واحدة</small>
+                                <input type="file" id="sessionFolderUpload" webkitdirectory directory multiple accept="video/*" class="hidden" onchange="previewSelectedFolder(this)">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>عنوان الفيديو:</label>
-                            <input type="text" id="videoTitle" required placeholder="مثال: شرح الحركة في البلوكس">
+
+                        <div id="selectedFolderPreview" class="hidden" style="background: var(--bg-dark); padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                            <div style="color: var(--accent); font-weight: bold; margin-bottom: 8px;" id="previewFolderName"></div>
+                            <ul id="previewVideosList" style="list-style: none; font-size: 0.85rem; color: var(--text-muted); max-height: 150px; overflow-y: auto;"></ul>
                         </div>
-                        <div class="form-group">
-                            <label>اختر ملف الفيديو من جهازك مباشرة:</label>
-                            <input type="file" id="videoFileUpload" accept="video/*" required style="background:var(--bg-dark); color:#fff; padding:10px; border-radius:6px; border:1px solid var(--border-color); width:100%;">
-                        </div>
-                        <button type="submit" id="uploadVideoBtn" class="btn-primary">رفع وحفظ الفيديو</button>
+
+                        <button type="submit" id="uploadFolderBtn" class="btn-primary">رفع وحفظ المجلد بالكامل</button>
                     </form>
                 </div>
             </div>
@@ -343,6 +348,8 @@
         let currentFolderFilter = null;
         let activeChatTarget = null;
         let activeObjectURLs = [];
+        let pendingFolderVideos = [];
+        let pendingFolderName = "";
 
         let state = {
             currentUser: null,
@@ -377,10 +384,13 @@
         function saveGroupsData() { localStorage.setItem('blocks_groups', JSON.stringify(state.groups)); }
         function saveSessionData() { sessionStorage.setItem('blocks_activeSession', JSON.stringify(state.currentUser)); }
 
-        function saveVideoFileToDB(videoId, fileBlob, callback) {
-            if (!db) return;
+        function saveMultipleVideoFilesToDB(items, callback) {
+            if (!db || items.length === 0) return callback();
             const tx = db.transaction("videoFiles", "readwrite");
-            tx.objectStore("videoFiles").put({ id: videoId, file: fileBlob });
+            const store = tx.objectStore("videoFiles");
+            items.forEach(item => {
+                store.put({ id: item.id, file: item.file });
+            });
             tx.oncomplete = () => { if (callback) callback(); };
         }
 
@@ -675,35 +685,82 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        // رفع الفيديو مباشرة من الجهاز وتخزينه في IndexedDB
-        function handleAddVideoForm(e) {
-            e.preventDefault();
-            const folder = document.getElementById('videoFolder').value.trim();
-            const title = document.getElementById('videoTitle').value.trim();
-            const fileInput = document.getElementById('videoFileUpload');
-            const btn = document.getElementById('uploadVideoBtn');
+        // معاينة الفيديوهات الموجودة داخل المجلد (Folder) المختار
+        function previewSelectedFolder(input) {
+            const files = Array.from(input.files || []);
+            const videoExts = ['.mp4', '.mkv', '.webm', '.avi', '.mov', '.m4v'];
+            const videoFiles = files.filter(f =>
+                f.type.startsWith('video/') || videoExts.some(ext => f.name.toLowerCase().endsWith(ext))
+            );
 
-            if (!fileInput.files || !fileInput.files[0]) {
-                alert('يرجى اختيار ملف الفيديو من جهازك أولاً!');
+            if (videoFiles.length === 0) {
+                alert('المجلد المختار لا يحتوي على أي ملفات فيديو!');
+                input.value = '';
+                document.getElementById('selectedFolderPreview').classList.add('hidden');
+                pendingFolderVideos = [];
+                pendingFolderName = "";
                 return;
             }
 
-            const file = fileInput.files[0];
-            const videoId = Date.now().toString() + "_" + Math.random().toString(36).substr(2, 5);
+            // ترتيب الفيديوهات أبجدياً / رقمياً
+            videoFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
 
+            // استخراج اسم المجلد الرئيسي تلقائياً من مسار الملف
+            const firstPath = videoFiles[0].webkitRelativePath || "";
+            pendingFolderName = firstPath.includes('/') ? firstPath.split('/')[0] : "Session Folder";
+            pendingFolderVideos = videoFiles;
+
+            document.getElementById('selectedFolderPreview').classList.remove('hidden');
+            document.getElementById('previewFolderName').innerHTML = `<i class="fa-solid fa-folder"></i> اسم المجلد: ${pendingFolderName} (${videoFiles.length} فيديوهات)`;
+            document.getElementById('previewVideosList').innerHTML = videoFiles.map((f, idx) =>
+                `<li style="padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">${idx + 1}. 🎬 ${f.name.replace(/\.[^/.]+$/, "")}</li>`
+            ).join('');
+        }
+
+        // رفع وحفظ مجلد السيشن بالكامل
+        function handleAddFolderForm(e) {
+            e.preventDefault();
+            if (pendingFolderVideos.length === 0) {
+                alert('يرجى اختيار مجلد (Folder) يحتوي على فيديوهات أولاً!');
+                return;
+            }
+
+            const btn = document.getElementById('uploadFolderBtn');
             btn.disabled = true;
-            btn.textContent = 'جاري رفع وحفظ الفيديو...';
+            btn.textContent = `جاري رفع وحفظ ${pendingFolderVideos.length} فيديوهات...`;
 
-            saveVideoFileToDB(videoId, file, () => {
-                state.videos.push({ id: videoId, folder, title, fileName: file.name });
+            const preparedItems = pendingFolderVideos.map((file, idx) => {
+                const videoId = Date.now().toString() + "_" + idx + "_" + Math.random().toString(36).substr(2, 5);
+                const cleanTitle = file.name.replace(/\.[^/.]+$/, "");
+                return {
+                    id: videoId,
+                    folder: pendingFolderName,
+                    title: cleanTitle,
+                    fileName: file.name,
+                    file: file
+                };
+            });
+
+            saveMultipleVideoFilesToDB(preparedItems, () => {
+                preparedItems.forEach(item => {
+                    state.videos.push({
+                        id: item.id,
+                        folder: item.folder,
+                        title: item.title,
+                        fileName: item.fileName
+                    });
+                });
                 saveVideosMeta();
 
                 btn.disabled = false;
-                btn.textContent = 'رفع وحفظ الفيديو';
-                document.getElementById('videoTitle').value = '';
-                fileInput.value = '';
+                btn.textContent = 'رفع وحفظ المجلد بالكامل';
+                document.getElementById('sessionFolderUpload').value = '';
+                document.getElementById('selectedFolderPreview').classList.add('hidden');
+                currentFolderFilter = pendingFolderName;
+                pendingFolderVideos = [];
+                pendingFolderName = "";
 
-                alert('تم رفع الفيديو من جهازك وحفظه بنجاح!');
+                alert('تم رفع مجلد السيشن بجميع فيديوهاته بنجاح!');
                 renderFoldersFilter();
                 renderVideos();
                 renderPermissionsList();
